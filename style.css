@@ -148,16 +148,19 @@ html, body {
   line-height: 1;
 }
 
-
 #map-container {
+  width: 100vw;
   height: 100vh;
   overflow: hidden;
   display: flex;
   justify-content: center;
-  align-items: start;
+  align-items: center;
 }
 
 #map-container svg {
+  width: auto;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
   display: block;
-  transform-origin: top left;
 }

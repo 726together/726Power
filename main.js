@@ -113,19 +113,17 @@ document.addEventListener("DOMContentLoaded", () => {
     function scaleSVGToViewport() {
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
-      const bbox = svg.getBBox();
 
+      const bbox = svg.getBBox();
       const scaleX = viewportWidth / bbox.width;
       const scaleY = viewportHeight / bbox.height;
+      const scale = Math.min(scaleX, scaleY); // 保持等比例
 
-      // 根據寬高較小者來縮放，避免超出
-      const scale = Math.min(scaleX, scaleY);
+      // 水平與垂直置中所需的位移
+      const offsetX = (viewportWidth - bbox.width * scale) / 2;
+      const offsetY = (viewportHeight - bbox.height * scale) / 2;
 
-      // 平移使 SVG 水平置中
-      const translateX = 0
-      const translateY = 0; // 如果你想垂直置中，也可以加上這個
-
-      svg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+      svg.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
     }
 
   function setBackgroundLabel(word, wordColor) {
