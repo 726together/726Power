@@ -1,0 +1,36 @@
+{
+    "name": "王鴻薇",
+    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Wang_Hung-wei_%282019%29.jpg/240px-Wang_Hung-wei_%282019%29.jpg",
+    "articles": [
+      {
+        "paragraphs": [
+          {
+            "title": "國會改革發言",
+            "date": "2024-06-01",
+            "text": "我認為國會改革勢在必行，我們必須採取強硬措施。",
+            "annotations": [
+              {
+                "highlight": "國會改革勢在必行",
+                "response": "改革內容未具體說明，實際上是藉機擴權。"
+              },
+              {
+                "highlight": "強硬措施",
+                "response": "所謂強硬措施是跳過程序、不讓討論，並非民主作法。"
+              }
+            ]
+          },
+          {
+            "title": "國家未來記者會",
+            "date": "2024-06-02",
+            "text": "我們的改革，是為了國家的未來。",
+            "annotations": [
+              {
+                "highlight": "國家的未來",
+                "response": "空泛口號，實際行為無法對應『未來』的長遠利益。"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+}
