@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div id="background-label"></div>
   <div id="map-container">
     <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1440 1982">
@@ -388,10 +387,13 @@
 <div id="popup" class="popup hidden">
   <div class="popup-header">
     <img id="popup-photo" src="" alt="">
-    <div>
-      <div id="popup-name"></div>
-      <div id="popup-district"></div>
-    </div>
+    <div class="popup-text-and-label">
+        <div class="popup-text">
+          <div id="popup-name">林委員</div>
+          <div id="popup-district">台北市第5選區</div>
+        </div>
+        <div id="popup-label">罷</div>
+      </div>
     <button id="popup-close">X</button>
   </div>
   <div class="popup-body" id="popup-body">
@@ -401,3 +403,12 @@
   <script src="main.js"></script>
 </body>
 </html>
+
+
+<div class="popup-text-and-label">
+    <div class="popup-text">
+      <div id="popup-name">林委員</div>
+      <div id="popup-district">台北市第5選區</div>
+    </div>
+    <div id="popup-label">罷</div>
+  </div>

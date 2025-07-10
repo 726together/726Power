@@ -31,6 +31,7 @@ html, body {
   background: #f7f7f7;
   border-bottom: 1px solid #ddd;
   position: relative;
+  z-index: 1;
 }
 
 .popup-header img {
@@ -56,6 +57,8 @@ html, body {
   overflow-y: auto;
   padding: 16px;
   background: #fafafa;
+  position: relative;
+  z-index: 1;
 }
 .annotated {
   background-color: rgba(255, 255, 0, 0.4);
@@ -97,6 +100,22 @@ html, body {
   box-shadow: 0 0 2px rgba(0,0,0,0.1);
 }
 
+/* ⬇️ 包住文字與 label */
+.popup-text-and-label {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ⬇️ 文字區塊（兩行） */
+.popup-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .paragraph-content p {
   background: #fff;
   padding: 10px 12px;
@@ -121,31 +140,9 @@ html, body {
   cursor: pointer;
   transition: color 0.2s;
 }
+
 #popup-close:hover {
   color: #333;
-}
-
-#background-label {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 99;
-
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 100vh; /* ✅ 高度等於整個 viewport */
-  font-family: "標楷體", PMingLiU, MingLiU, serif;
-  background-color: transparent;
-
-  opacity: 0.20;
-  pointer-events: none;
-  user-select: none;
-  white-space: nowrap;
-  line-height: 1;
 }
 
 #map-container {
@@ -163,4 +160,18 @@ html, body {
   max-height: 100%;
   object-fit: contain;
   display: block;
+}
+
+#popup-label {
+  margin-left: auto;
+  margin-right: 8px;
+  padding: 4px 10px;
+  font-size: 1.1em;
+  font-weight: bold;
+  background-color: rgba(255, 0, 0, 0.15); /* 預設赤色淡底 */
+  color: red;
+  border-radius: 8px;
+  align-self: center;
+  user-select: none;
+  pointer-events: none;
 }
