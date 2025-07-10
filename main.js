@@ -110,29 +110,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const svg = document.querySelector("#map-container svg");
     const hash = decodeURIComponent(window.location.hash.slice(1)).trim();
-    function scaleSVGToViewport() {
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-
-      const bbox = svg.getBBox();
-      const scaleX = viewportWidth / bbox.width;
-      const scaleY = viewportHeight / bbox.height;
-      const scale = Math.min(scaleX, scaleY); // 保持等比例
-
-      // 水平與垂直置中所需的位移
-      const offsetX = (viewportWidth - bbox.width * scale) / 2;
-      const offsetY = (viewportHeight - bbox.height * scale) / 2;
-
-      svg.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-    }
 
   function setBackgroundLabel(word, wordColor) {
     const bg = document.getElementById("background-label");
     bg.textContent = word;
     bg.style.color = wordColor;
   }
-  scaleSVGToViewport();
-  window.addEventListener("resize", scaleSVGToViewport);
 
   const kmtAreas = new Set(['新北市第08選區', '新竹市第01選區', '桃園市第06選區', '臺中市第06選區', '桃園市第02選區', '臺東縣第01選區', '桃園市第04選區', '臺北市第08選區', '新北市第01選區', '雲林縣第01選區', '新北市第11選區', '桃園市第03選區', '臺中市第02選區', '臺北市第07選區', '基隆市第01選區', '桃園市第01選區', '新北市第09選區', '花蓮縣第01選區', '臺北市第04選區', '臺北市第06選區', '南投縣第01選區', '臺中市第03選區', '臺中市第08選區', '臺中市第04選區', '新北市第07選區', '臺北市第03選區', '南投縣第02選區', '新北市第12選區', '桃園市第05選區', '臺中市第05選區']);
   const dppAreas = new Set(['臺北市第01選區', '臺北市第02選區', '臺北市第05選區', '新北市第02選區', '新北市第03選區', '新北市第04選區', '新北市第05選區', '新北市第06選區', '新北市第10選區', '臺中市第01選區', '臺中市第07選區', '臺南市第01選區', '臺南市第02選區', '臺南市第03選區', '臺南市第04選區', '臺南市第05選區', '臺南市第06選區', '高雄市第01選區', '高雄市第02選區', '高雄市第03選區', '高雄市第04選區', '高雄市第05選區', '高雄市第06選區', '高雄市第07選區', '高雄市第08選區', '新竹縣第01選區', '新竹縣第02選區', '彰化縣第01選區', '彰化縣第02選區', '彰化縣第03選區', '彰化縣第04選區', '屏東縣第01選區']);
