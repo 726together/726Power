@@ -111,10 +111,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const svg = document.querySelector("#map-container svg");
     const hash = decodeURIComponent(window.location.hash.slice(1)).trim();
     function scaleSVGToViewport() {
+      const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
       const bbox = svg.getBBox();
-      const scale = viewportHeight / bbox.height;
-      svg.style.transform = `scale(${scale})`;
+
+      const scaleX = viewportWidth / bbox.width;
+      const scaleY = viewportHeight / bbox.height;
+
+      // 根據寬高較小者來縮放，避免超出
+      const scale = Math.min(scaleX, scaleY);
+
+      // 平移使 SVG 水平置中
+      const translateX = 0
+      const translateY = 0; // 如果你想垂直置中，也可以加上這個
+
+      svg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
     }
 
   function setBackgroundLabel(word, wordColor) {

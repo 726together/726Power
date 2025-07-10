@@ -159,5 +159,5 @@ html, body {
 
 #map-container svg {
   display: block;
-  transform-origin: top center;
+  transform-origin: top left;
 }
