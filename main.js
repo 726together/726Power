@@ -1,5 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+document.addEventListener('click', () => {
+  const ocean = document.getElementById('ocean-sound');
+  ocean.volume = 0.5;
+  ocean.play().catch(err => console.warn(err));
+}, { once: true });
+
 function updateOceanHeight() {
   const vh = window.innerHeight;
   const bg = document.getElementById('ocean-background');
@@ -73,7 +79,7 @@ function spawnBird() {
 }
 
 function spawnCloud() {
-  if (document.querySelectorAll('.cloud').length >= 3) return; // 最多兩片
+  if (document.querySelectorAll('.cloud').length >= 5) return; // 最多兩片
 
   const cloud = document.createElement('div');
   cloud.classList.add('cloud');
