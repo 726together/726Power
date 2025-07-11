@@ -13,8 +13,7 @@ document.addEventListener('DOMContentLoaded', updateOceanHeight);
 
 function spawnBird() {
   if (document.querySelectorAll('.bird').length >= 3) return;
-  const bird = document.createElement('img');
-  bird.src = 'birds.png'; // 使用你的鳥圖片
+  const bird = document.createElement('div');
   bird.classList.add('bird');
   document.getElementById('bird-layer').appendChild(bird);
 
