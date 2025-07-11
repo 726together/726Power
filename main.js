@@ -18,7 +18,7 @@ function spawnBird() {
   bird.classList.add('bird');
   document.getElementById('bird-layer').appendChild(bird);
 
-  const startX = Math.random() * window.innerWidth * 1.3;
+  const startX = Math.random() * window.innerWidth * 0.3;
   const startY = Math.random() * window.innerHeight * 0.3;
   const endX = window.innerWidth * 0.7 + Math.random() * window.innerWidth * 0.3;
   const endY = window.innerHeight * 0.7 + Math.random() * window.innerHeight * 0.3;
