@@ -1,4 +1,33 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+  function alignPickerToSvgBottomLeft() {
+  const svg = document.querySelector("#map-container svg");
+  const picker = document.getElementById("picker-container");
+
+  if (!svg || !picker) return;
+
+  // 取得 svg 在螢幕上的位置
+  const rect = svg.getBoundingClientRect();
+
+  // 將 picker 位置設為 fixed 並對齊 SVG 的左下角（加入 10px 偏移）
+  picker.style.position = "fixed";
+  picker.style.left = `${rect.left + 10}px`;
+  picker.style.top = `${rect.bottom - picker.offsetHeight - 10}px`;
+}
+
+alignPickerToSvgBottomLeft();
+window.addEventListener("resize", alignPickerToSvgBottomLeft);
+const mapContainer = document.getElementById("map-container");
+const picker = document.getElementById("picker-container");
+
+// ✅ 若還沒放進正確位置就插入 svg 後
+if (picker && mapContainer.querySelector("svg") && picker.parentElement !== mapContainer) {
+  mapContainer.insertBefore(picker, svg.nextSibling);
+}
+
+// ✅ 確保 map-container 有定位基準
+mapContainer.style.position = "relative";
+  
 const soundToggle = document.getElementById("sound-toggle");
 const oceanSound = document.getElementById("ocean-sound");
 oceanSound.muted = !oceanSound.muted;
@@ -10,8 +39,8 @@ soundToggle.addEventListener("click", () => {
 
 document.addEventListener('click', () => {
   const ocean = document.getElementById('ocean-sound');
-  ocean.volume = 0.5;
-  ocean.play().catch(err => console.warn(err));
+  oceanSound.volume = 0.5;
+  oceanSound.play().catch(err => console.warn(err));
 }, { once: true });
 
 function updateOceanHeight() {
