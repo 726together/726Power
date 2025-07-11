@@ -210,12 +210,14 @@ setInterval(() => {
 
     document.getElementById("popup").classList.remove("hidden");
     document.getElementById("ocean-background").style.display = "none";
+    document.body.style.backgroundColor = "#0077be";
     document.querySelector('svg').pauseAnimations();
   }
 
   document.getElementById("popup-close").onclick = () => {
     document.getElementById("popup").classList.add("hidden");
     document.getElementById("ocean-background").style.display = "block";
+    document.body.style.backgroundColor = "";
     document.querySelector('svg').unpauseAnimations();
   };
 
