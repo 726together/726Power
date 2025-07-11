@@ -244,7 +244,7 @@ html, body {
 }
 
 #picker-wheel {
-  width: 160px;
+  width: 220px;
   height: 120px; /* 3 items × 40px */
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
@@ -271,14 +271,14 @@ html, body {
   line-height: 40px;
   text-align: center;
   scroll-snap-align: center;
-  font-size: 0.95em;
+  font-size: 25px;         
   color: #666;
   transition: color 0.2s, font-weight 0.2s;
 }
 #picker-list li.active {
   color: #000;
   font-weight: bold;
-  font-size: 1.05em;
+  font-size: 28px;
 }
 
 #picker-wheel::after {
@@ -294,7 +294,7 @@ html, body {
 #recall-button {
   margin-left: 12px;
   padding: 8px 14px;
-  font-size: 1em;
+  font-size: 32px;
   background-color: #999;
   color: white;
   border: none;
