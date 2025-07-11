@@ -19,9 +19,9 @@ function spawnBird() {
 
   const startX = Math.random() * window.innerWidth * 0.3;
   const startY = Math.random() * window.innerHeight * 0.3;
-  const margin = 60;
-  const endX = Math.min(window.innerWidth - margin - size, startX + 100 + Math.random() * 100);
-  const endY = Math.min(window.innerHeight - margin - size, startY + 60 + Math.random() * 80);
+  const endX = window.innerWidth * 0.7 + Math.random() * window.innerWidth * 0.3;
+  const endY = window.innerHeight * 0.7 + Math.random() * window.innerHeight * 0.3;
+
   // Two control points for a cubic Bezier curve
   const cp1X = Math.random() * window.innerWidth;
   const cp1Y = Math.random() * window.innerHeight * 0.5;
@@ -55,9 +55,7 @@ function spawnBird() {
     if (!startTime) startTime = ts;
     const progress = (ts - startTime) / duration;
     if (progress > 1) {
-      bird.style.transition = 'opacity 1.2s ease';
-      bird.style.opacity = '0';
-      setTimeout(() => bird.remove(), 1200);
+      bird.remove();
       return;
     }
 
@@ -79,9 +77,8 @@ function spawnCloud() {
   cloud.classList.add('cloud');
 
   const size = 300 + Math.random() * 300; 
-  const padding = 20;
-  const startX = padding + Math.random() * (window.innerWidth - size - padding * 2);
-  const startY = padding + Math.random() * (window.innerHeight - size - padding * 2);
+  const startX = -size - Math.random() * 100;
+  const startY = window.innerHeight + Math.random() * 300;
   const duration = 30000 + Math.random() * 10000;
 
   cloud.style.width = `${size}px`;
@@ -94,17 +91,13 @@ function spawnCloud() {
 
   cloud.animate([
     { transform: `translate(0px, 0px)` },
-    { transform: `translate(50px, -50px)` }
+    { transform: `translate(${window.innerWidth + size}px, ${-window.innerHeight - size}px)` }
   ], {
     duration: duration,
     easing: 'linear'
   });
 
-  setTimeout(() => {
-      cloud.style.transition = 'opacity 2s ease';
-      cloud.style.opacity = '0';
-      setTimeout(() => cloud.remove(), 2000);
-    }, duration - 2000);
+  setTimeout(() => cloud.remove(), duration);
 }
 
 
