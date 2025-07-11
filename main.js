@@ -209,11 +209,13 @@ setInterval(() => {
     });
 
     document.getElementById("popup").classList.remove("hidden");
+    document.getElementById("ocean-background").style.display = "none";
     document.querySelector('svg').pauseAnimations();
   }
 
   document.getElementById("popup-close").onclick = () => {
     document.getElementById("popup").classList.add("hidden");
+    document.getElementById("ocean-background").style.display = "block";
     document.querySelector('svg').unpauseAnimations();
   };
 
