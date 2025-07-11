@@ -19,13 +19,13 @@ function spawnBird() {
 
   const startX = Math.random() * window.innerWidth * 0.3;
   const startY = Math.random() * window.innerHeight * 0.3;
-  const margin = 60;
-  const endX = Math.min(window.innerWidth - margin - size, startX + 100 + Math.random() * 100);
-  const endY = Math.min(window.innerHeight - margin - size, startY + 60 + Math.random() * 80);
+  const endX = window.innerWidth * 0.7 + Math.random() * window.innerWidth * 0.3;
+  const endY = window.innerHeight * 0.7 + Math.random() * window.innerHeight * 0.3;
+
   // Two control points for a cubic Bezier curve
-  const cp1X = Math.random() * window.innerWidth;
+  const cp1X = Math.random() * window.innerWidth * 0.8;
   const cp1Y = Math.random() * window.innerHeight * 0.5;
-  const cp2X = Math.random() * window.innerWidth;
+  const cp2X = Math.random() * window.innerWidth * 0.8;
   const cp2Y = window.innerHeight * 0.5 + Math.random() * window.innerHeight * 0.5;
 
   const duration = 16000 + Math.random() * 8000; // slower speed
@@ -54,7 +54,7 @@ function spawnBird() {
   function animate(ts) {
     if (!startTime) startTime = ts;
     const progress = (ts - startTime) / duration;
-    if (progress > 1) {
+    if (progress > 0.7) {
       bird.style.transition = 'opacity 1.2s ease';
       bird.style.opacity = '0';
       setTimeout(() => bird.remove(), 1200);
@@ -73,31 +73,38 @@ function spawnBird() {
 }
 
 function spawnCloud() {
-  if (document.querySelectorAll('.cloud').length >= 5) return; // 最多兩片
+  if (document.querySelectorAll('.cloud').length >= 3) return; // 最多兩片
 
   const cloud = document.createElement('div');
   cloud.classList.add('cloud');
 
-  const size = 300 + Math.random() * 300; 
+  const size = 100 + Math.random() * 300; 
   const padding = 20;
   const startX = padding + Math.random() * (window.innerWidth - size - padding * 2);
   const startY = padding + Math.random() * (window.innerHeight - size - padding * 2);
   const duration = 30000 + Math.random() * 10000;
+  const finalOpacity = (0.1 + Math.random() * 0.6);
 
   cloud.style.width = `${size}px`;
   cloud.style.height = `${size}px`;
-  cloud.style.opacity = (0.3 + Math.random() * 0.8).toFixed(2);
   cloud.style.left = `${startX}px`;
   cloud.style.top = `${startY}px`;
-
+  cloud.style.opacity = '0';
   document.body.appendChild(cloud);
 
-  cloud.animate([
-    { transform: `translate(0px, 0px)` },
-    { transform: `translate(50px, -50px)` }
-  ], {
-    duration: duration,
-    easing: 'linear'
+  requestAnimationFrame(() => {
+    cloud.style.transition = 'opacity 2s ease';
+    cloud.style.opacity = finalOpacity;
+
+    setTimeout(() => {
+      cloud.animate([
+        { transform: 'translate(0px, 0px)' },
+        { transform: `translate(50px, -50px)` }
+      ], {
+        duration: duration,
+        easing: 'linear'
+      });
+    }, 100); // 小延遲讓 opacity transition 能生效
   });
 
   setTimeout(() => {
@@ -111,7 +118,7 @@ function spawnCloud() {
 // 三不五時出現
 setInterval(() => {
   if (Math.random() < 0.3) spawnBird();
-}, 1000); // 每 3 秒判斷一次
+}, 3000); // 每 3 秒判斷一次
   
 
 // 每 10 秒有 50% 機率出現新雲
