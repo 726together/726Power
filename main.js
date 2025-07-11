@@ -209,10 +209,12 @@ setInterval(() => {
     });
 
     document.getElementById("popup").classList.remove("hidden");
+    document.querySelector('svg').pauseAnimations();
   }
 
   document.getElementById("popup-close").onclick = () => {
     document.getElementById("popup").classList.add("hidden");
+    document.querySelector('svg').unpauseAnimations();
   };
 
   //地圖點選後呼叫
