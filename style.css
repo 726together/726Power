@@ -274,6 +274,7 @@ html, body {
   font-size: 1.25rem;         
   color: #666;
   transition: color 0.2s, font-weight 0.2s;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 #picker-list li.active {
   color: #000;
