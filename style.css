@@ -244,7 +244,7 @@ html, body {
 }
 
 #picker-wheel {
-  width: 220px;
+  width: auto;
   height: 120px; /* 3 items × 40px */
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
@@ -252,7 +252,7 @@ html, body {
   border-radius: 8px;
   border: 1px solid #ccc;
   position: relative;
-
+  min-width: 200px;    /* 最小寬度避免過小 */
   /* ✅ 隱藏 scrollbar */
   scrollbar-width: none;             /* Firefox */
   -ms-overflow-style: none;          /* IE/Edge */
@@ -271,14 +271,14 @@ html, body {
   line-height: 40px;
   text-align: center;
   scroll-snap-align: center;
-  font-size: 25px;         
+  font-size: 1.25rem;         
   color: #666;
   transition: color 0.2s, font-weight 0.2s;
 }
 #picker-list li.active {
   color: #000;
   font-weight: bold;
-  font-size: 28px;
+  font-size: 1.5rem;
 }
 
 #picker-wheel::after {
@@ -294,7 +294,7 @@ html, body {
 #recall-button {
   margin-left: 12px;
   padding: 8px 14px;
-  font-size: 32px;
+  font-size: 1.5rem;
   background-color: #999;
   color: white;
   border: none;
