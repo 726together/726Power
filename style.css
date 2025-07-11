@@ -204,11 +204,6 @@ html, body {
   width: 40px;
   height: 40px;
   pointer-events: none;
-  will-change: transform;
-  backface-visibility: hidden;
-  contain: layout style;  /* 或 strict 也可 */
-  transform-style: preserve-3d;
-  image-rendering: pixelated; /* 如有需要 */
 }
 
 .cloud {
@@ -217,10 +212,6 @@ html, body {
   height: 100px;
   background-image: url('cloud.png'); /* 可換成你的雲圖或 base64 */
   background-size: cover;
-  pointer-events: none;  
+  pointer-events: none;
   will-change: transform;
-  backface-visibility: hidden;
-  contain: layout style;  /* 或 strict 也可 */
-  transform-style: preserve-3d;
-  image-rendering: pixelated; /* 如有需要 */
 }
