@@ -245,7 +245,8 @@ html, body {
 
 #picker-wheel {
   width: auto;
-  height: 120px; /* 3 items × 40px */
+  height: 150px; /* 3 items × 40px */
+  padding: 8px 14px;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
@@ -267,26 +268,25 @@ html, body {
   padding: 0;
 }
 #picker-list li {
-  height: 40px;
-  line-height: 40px;
+  height: 50px;
+  line-height: 50px;
   text-align: center;
   scroll-snap-align: center;
-  font-size: 1.25rem;         
+  font-size: 2.0rem;         
   color: #666;
   transition: color 0.2s, font-weight 0.2s;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 #picker-list li.active {
   color: #000;
-  font-weight: bold;
-  font-size: 1.5rem;
+  font-size: 2.25rem;
 }
 
 #picker-wheel::after {
   content: "";
   position: absolute;
-  top: 40px;
-  height: 40px;
+  top: 50px;
+  height: 50px;
   width: 100%;
   pointer-events: none;
   z-index: 10;
@@ -295,7 +295,7 @@ html, body {
 #recall-button {
   margin-left: 12px;
   padding: 8px 14px;
-  font-size: 1.5rem;
+  font-size: 2.0rem;
   background-color: #999;
   color: white;
   border: none;

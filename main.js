@@ -432,7 +432,7 @@ const allDistricts = Array.from(paths)
   .sort();
 
 // 建立列表（加入上下空白 padding）
-const ITEM_HEIGHT = 40;
+const ITEM_HEIGHT = 50;
 const CENTER_OFFSET = ITEM_HEIGHT; // 容器高度 120px，中心點在第 2 項（index 1）
 
 pickerList.innerHTML = "";
