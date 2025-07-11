@@ -165,6 +165,7 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 
 #map-container svg {
@@ -173,6 +174,7 @@ html, body {
   max-height: 100%;
   object-fit: contain;
   display: block;
+  position: relative;
 }
 
 #popup-label {
@@ -222,4 +224,104 @@ html, body {
   background-size: cover;
   pointer-events: none;
   will-change: transform;
+}
+
+#picker-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  padding: 10px;
+  z-index: 100;
+}
+
+#picker-wheel {
+  width: 160px;
+  height: 120px; /* 3 items × 40px */
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  position: relative;
+
+  /* ✅ 隱藏 scrollbar */
+  scrollbar-width: none;             /* Firefox */
+  -ms-overflow-style: none;          /* IE/Edge */
+}
+#picker-wheel::-webkit-scrollbar {
+  display: none;                     /* Chrome/Safari */
+}
+
+#picker-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+#picker-list li {
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  scroll-snap-align: center;
+  font-size: 0.95em;
+  color: #666;
+  transition: color 0.2s, font-weight 0.2s;
+}
+#picker-list li.active {
+  color: #000;
+  font-weight: bold;
+  font-size: 1.05em;
+}
+
+#picker-wheel::after {
+  content: "";
+  position: absolute;
+  top: 40px;
+  height: 40px;
+  width: 100%;
+  border-top: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
+  pointer-events: none;
+}
+
+#recall-button {
+  margin-left: 12px;
+  padding: 8px 14px;
+  font-size: 1em;
+  background-color: #999;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: not-allowed;
+  transition: background-color 0.3s ease;
+}
+#recall-button.active {
+  background-color: #ff4444;
+  cursor: pointer;
+}
+#sound-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 200;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 8px;
+  padding: 6px 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  user-select: none;
+  transition: background 0.2s;
+}
+#sound-toggle:hover {
+  background: rgba(255, 255, 255, 1);
+}
+#sound-toggle.muted {
+  color: #aaa;
 }

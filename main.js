@@ -1,4 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
+const soundToggle = document.getElementById("sound-toggle");
+const oceanSound = document.getElementById("ocean-sound");
+oceanSound.muted = !oceanSound.muted;
+soundToggle.addEventListener("click", () => {
+  oceanSound.muted = !oceanSound.muted;
+  soundToggle.classList.toggle("muted", oceanSound.muted);
+  soundToggle.textContent = oceanSound.muted ? "🔇" : "🔊";
+});
 
 document.addEventListener('click', () => {
   const ocean = document.getElementById('ocean-sound');
@@ -212,6 +220,7 @@ setInterval(() => {
     document.getElementById("ocean-background").style.display = "none";
     document.body.style.backgroundColor = "#0077be";
     document.querySelector('svg').pauseAnimations();
+    document.getElementById("picker-container").style.display = "none";
   }
 
   document.getElementById("popup-close").onclick = () => {
@@ -219,6 +228,7 @@ setInterval(() => {
     document.getElementById("ocean-background").style.display = "block";
     document.body.style.backgroundColor = "";
     document.querySelector('svg').unpauseAnimations();
+    document.getElementById("picker-container").style.display = "flex";
   };
 
   //地圖點選後呼叫
@@ -282,8 +292,7 @@ function setBackgroundLabel(word, wordColor) {
   }
 }
 
-  const kmtAreas = new Set(['新北市第08選區', '新竹市第01選區', '桃園市第06選區', '臺中市第06選區', '桃園市第02選區', '臺東縣第01選區', '桃園市第04選區', '臺北市第08選區', '新北市第01選區', '雲林縣第01選區', '新北市第11選區', '桃園市第03選區', '臺中市第02選區', '臺北市第07選區', '基隆市第01選區', '桃園市第01選區', '新北市第09選區', '花蓮縣第01選區', '臺北市第04選區', '臺北市第06選區', '南投縣第01選區', '臺中市第03選區', '臺中市第08選區', '臺中市第04選區', '新北市第07選區', '臺北市第03選區', '南投縣第02選區', '新北市第12選區', '桃園市第05選區', '臺中市第05選區']);
-  const dppAreas = new Set(['臺北市第01選區', '臺北市第02選區', '臺北市第05選區', '新北市第02選區', '新北市第03選區', '新北市第04選區', '新北市第05選區', '新北市第06選區', '新北市第10選區', '臺中市第01選區', '臺中市第07選區', '臺南市第01選區', '臺南市第02選區', '臺南市第03選區', '臺南市第04選區', '臺南市第05選區', '臺南市第06選區', '高雄市第01選區', '高雄市第02選區', '高雄市第03選區', '高雄市第04選區', '高雄市第05選區', '高雄市第06選區', '高雄市第07選區', '高雄市第08選區', '新竹縣第01選區', '新竹縣第02選區', '彰化縣第01選區', '彰化縣第02選區', '彰化縣第03選區', '彰化縣第04選區', '屏東縣第01選區']);
+  const taiwanAreas = new Set(['臺北市第01選區', '臺北市第02選區', '臺北市第05選區', '新北市第02選區', '新北市第03選區', '新北市第04選區', '新北市第05選區', '新北市第06選區', '新北市第10選區', '臺中市第01選區', '臺中市第07選區', '臺南市第01選區', '臺南市第02選區', '臺南市第03選區', '臺南市第04選區', '臺南市第05選區', '臺南市第06選區', '高雄市第01選區', '高雄市第02選區', '高雄市第03選區', '高雄市第04選區', '高雄市第05選區', '高雄市第06選區', '高雄市第07選區', '高雄市第08選區', '新竹縣第01選區', '新竹縣第02選區', '彰化縣第01選區', '彰化縣第02選區', '彰化縣第03選區', '彰化縣第04選區', '屏東縣第01選區', '屏東縣第02選區', '嘉義縣第01選區', '嘉義縣第02選區', '嘉義市第01選區', '雲林縣第02選區']);
   const mixedAreas = new Set(['臺北市第03選區', '臺北市第04選區', '臺北市第06選區', '臺北市第07選區', '臺北市第08選區', '新北市第01選區', '新北市第07選區', '新北市第08選區', '新北市第09選區', '新北市第11選區', '新北市第12選區', '桃園市第01選區', '桃園市第02選區', '桃園市第03選區', '桃園市第04選區', '桃園市第05選區', '桃園市第06選區', '臺中市第02選區', '臺中市第03選區', '臺中市第04選區', '臺中市第05選區', '臺中市第06選區', '臺中市第08選區', '基隆市第01選區', '新竹市第01選區', '雲林縣第01選區', '花蓮縣第01選區', '臺東縣第01選區', '南投縣第01選區', '南投縣第02選區']);
 
   const paths = svg.querySelectorAll("path");
@@ -295,7 +304,7 @@ function setBackgroundLabel(word, wordColor) {
     if (mixedAreas.has(areaName)) {
       path.style.fill = "url(#redBlueGradient)";
       path.style.stroke = "#00FFFF";
-    } else if (dppAreas.has(areaName)) {
+    } else if (taiwanAreas.has(areaName)) {
       path.style.fill = "#004b82"; // 青色
       path.style.stroke = "#00FFFF";
     } else {
@@ -305,16 +314,34 @@ function setBackgroundLabel(word, wordColor) {
 
     const originalColor = path.style.fill || path.getAttribute("fill") || "";
 
-    path.addEventListener("click", () => {  
-      if(areaName != "")    
+    let lastClickedDistrict = null;
+    path.addEventListener("click", () => {        
+      if (!areaName) return;
+
+      const selectedIndex = allDistricts.indexOf(areaName);
+      if (selectedIndex === -1) return;
+
+      const targetIndex = selectedIndex + 1; // 加 1 是因為有 top blank li
+      snapToIndex(targetIndex);
+      updateSelection(targetIndex);
+
+      if (lastClickedDistrict === areaName) {
+        // 再次點擊 → 真的要開 popup
         onDistrictClicked(areaName);
-        if (mixedAreas.has(areaName)) {
-          setBackgroundLabel("罷", "#000");
-        } else if (dppAreas.has(areaName)) {
-          setBackgroundLabel("青", "#1e3d7a");
-        } else {
-          setBackgroundLabel("赤", "red");
-        }
+        lastClickedDistrict = null; // 重置
+      } else {
+        // 第一次點擊 → 僅選擇，不開 popup
+        lastClickedDistrict = areaName;
+      }
+
+      if (mixedAreas.has(areaName)) {
+        setBackgroundLabel("罷", "#000");
+      } else if (taiwanAreas.has(areaName)) {
+        setBackgroundLabel("青", "#1e3d7a");
+      } else {
+        setBackgroundLabel("赤", "red");
+      }
+
     });
 
     path.addEventListener("mouseover", () => {
@@ -350,4 +377,134 @@ function setBackgroundLabel(word, wordColor) {
 </linearGradient>
   `;
   svg.insertBefore(defs, svg.firstChild);
+
+  const pickerList = document.getElementById("picker-list");
+const pickerWheel = document.getElementById("picker-wheel");
+const recallButton = document.getElementById("recall-button");
+
+  pickerWheel.addEventListener("wheel", (e) => {
+  e.preventDefault(); // 阻止預設 scroll（避免跳太多）
+
+  const direction = e.deltaY > 0 ? 1 : -1;
+  const currentIndex = getCenteredIndex();
+  const nextIndex = Math.min(
+    Math.max(currentIndex + direction, 1), // 最小 index = 1 (第一個選區)
+    allDistricts.length                  // 最大 index = 最後一個選區
+  );
+
+  snapToIndex(nextIndex);
+  updateSelection(nextIndex);
+}, { passive: false }); // 🔴 必須設為 false 才能有效阻止滾動
+
+// 取得所有選區名稱（從 SVG <title>）
+const allDistricts = Array.from(paths)
+  .map(p => p.querySelector("title")?.textContent.trim())
+  .filter(Boolean)
+  .sort();
+
+// 建立列表（加入上下空白 padding）
+const ITEM_HEIGHT = 40;
+const CENTER_OFFSET = ITEM_HEIGHT; // 容器高度 120px，中心點在第 2 項（index 1）
+
+pickerList.innerHTML = "";
+
+// 上方空白
+const blankTop = document.createElement("li");
+blankTop.style.height = `${ITEM_HEIGHT}px`;
+pickerList.appendChild(blankTop);
+
+// 實際選區
+allDistricts.forEach(d => {
+  const li = document.createElement("li");
+  li.textContent = d;
+  pickerList.appendChild(li);
+});
+
+// 下方空白
+const blankBottom = document.createElement("li");
+blankBottom.style.height = `${ITEM_HEIGHT}px`;
+pickerList.appendChild(blankBottom);
+
+// 🔄 滾動結束後 snap 對齊中心項
+let scrollTimer = null;
+pickerWheel.addEventListener("scroll", () => {
+  if (scrollTimer) clearTimeout(scrollTimer);
+  scrollTimer = setTimeout(() => {
+    const centerIndex = getCenteredIndex();
+    snapToIndex(centerIndex);
+    updateSelection(centerIndex);
+  }, 100);
+});
+
+// 👉 根據 scrollTop + 偏移計算中心 index
+function getCenteredIndex() {
+  const offset = pickerWheel.scrollTop + CENTER_OFFSET;
+  return Math.round(offset / ITEM_HEIGHT);
+}
+
+// 👉 滾動對齊某 index 到中心
+function snapToIndex(index) {
+  const targetTop = index * ITEM_HEIGHT - CENTER_OFFSET;
+  pickerWheel.scrollTo({ top: targetTop, behavior: "smooth" });
+}
+
+// 👉 更新高亮、背景、罷字按鈕
+function updateSelection(index) {
+  const items = pickerList.querySelectorAll("li");
+  items.forEach((li, i) => {
+    li.classList.toggle("active", i === index);
+  });
+
+  const selectedDistrict = items[index]?.textContent;
+  if (!selectedDistrict || !allDistricts.includes(selectedDistrict)) return;
+
+  // 高亮地圖
+  paths.forEach(p => {
+    const title = p.querySelector("title")?.textContent.trim();
+    p.style.filter = (title === selectedDistrict) ? "brightness(1.3)" : "";
+  });
+
+  // 載入背景與 recall 控制
+  fetch(`data/${selectedDistrict}.json`)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("ocean-background").style.backgroundImage = `url('${data.photo}')`;
+      document.getElementById("ocean-background").style.backgroundSize = "cover";
+      document.getElementById("ocean-background").style.backgroundPosition = "center";
+
+      if (mixedAreas.has(selectedDistrict)) {
+        recallButton.disabled = false;
+        recallButton.classList.add("active");
+      } else {
+        recallButton.disabled = true;
+        recallButton.classList.remove("active");
+      }
+    })
+    .catch(err => {
+      console.warn(`無法載入 ${selectedDistrict} 的 json`, err);
+      document.getElementById("ocean-background").style.backgroundSize = "cover";
+      document.getElementById("ocean-background").style.backgroundPosition = "center";
+
+      if (mixedAreas.has(selectedDistrict)) {
+        recallButton.disabled = false;
+        recallButton.classList.add("active");
+      } else {
+        recallButton.disabled = true;
+        recallButton.classList.remove("active");
+      }      
+    });
+}
+
+// ▶️ 點擊 recall 開啟 popup
+recallButton.addEventListener("click", () => {
+  const active = pickerList.querySelector("li.active");
+  if (active && !recallButton.disabled) {
+    onDistrictClicked(active.textContent);
+  }
+});
+
+// ▶️ 預設選擇第一項
+const initialIndex = 1; // index 0 是空白
+snapToIndex(initialIndex);
+setTimeout(() => updateSelection(initialIndex), 300);
 });
