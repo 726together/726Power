@@ -7,9 +7,17 @@ html, body {
 /* 讓 SVG 背景全螢幕，固定在最底層 */
 #ocean-background {
   position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: -1;
+  pointer-events: none;
+  contain: strict;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
+
 .popup {
   position: fixed;
   top: 5%;
