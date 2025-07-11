@@ -1,5 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+function updateOceanHeight() {
+  const vh = window.innerHeight;
+  const bg = document.getElementById('ocean-background');
+  if (bg) {
+    bg.style.height = vh + 'px';
+  }
+}
+window.addEventListener('resize', updateOceanHeight);
+window.addEventListener('orientationchange', updateOceanHeight);
+document.addEventListener('DOMContentLoaded', updateOceanHeight);
+
 function spawnBird() {
   if (document.querySelectorAll('.bird').length >= 3) return;
   const bird = document.createElement('img');
