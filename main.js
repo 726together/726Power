@@ -1,4 +1,107 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+function spawnBird() {
+  if (document.querySelectorAll('.bird').length >= 3) return;
+  const bird = document.createElement('img');
+  bird.src = 'birds.png'; // 使用你的鳥圖片
+  bird.classList.add('bird');
+  document.getElementById('bird-layer').appendChild(bird);
+
+  const startX = Math.random() * window.innerWidth * 1.3;
+  const startY = Math.random() * window.innerHeight * 0.3;
+  const endX = window.innerWidth * 0.7 + Math.random() * window.innerWidth * 0.3;
+  const endY = window.innerHeight * 0.7 + Math.random() * window.innerHeight * 0.3;
+
+  // Two control points for a cubic Bezier curve
+  const cp1X = Math.random() * window.innerWidth;
+  const cp1Y = Math.random() * window.innerHeight * 0.5;
+  const cp2X = Math.random() * window.innerWidth;
+  const cp2Y = window.innerHeight * 0.5 + Math.random() * window.innerHeight * 0.5;
+
+  const duration = 16000 + Math.random() * 8000; // slower speed
+
+  let startTime = null;
+  const blurAmount = Math.random() * 2;
+  bird.style.filter = `blur(${blurAmount}px)`;
+  bird.style.opacity = `${0.7 + Math.random() * 0.3}`;
+
+  // Adjust size based on blur: base size 40px + (blurAmount * scale factor)
+  const baseSize = 100;
+  const scaleFactor = 6;
+  const size = baseSize + blurAmount * scaleFactor;
+  bird.style.width = `${size}px`;
+  bird.style.height = `${size}px`;
+
+  function cubicBezier(t, p0, p1, p2, p3) {
+    return (
+      Math.pow(1 - t, 3) * p0 +
+      3 * Math.pow(1 - t, 2) * t * p1 +
+      3 * (1 - t) * Math.pow(t, 2) * p2 +
+      Math.pow(t, 3) * p3
+    );
+  }
+
+  function animate(ts) {
+    if (!startTime) startTime = ts;
+    const progress = (ts - startTime) / duration;
+    if (progress > 1) {
+      bird.remove();
+      return;
+    }
+
+    const x = cubicBezier(progress, startX, cp1X, cp2X, endX);
+    const y = cubicBezier(progress, startY, cp1Y, cp2Y, endY);
+    const flap = Math.sin(progress * Math.PI * 10) * 5;
+    bird.style.transform = `translate(${x}px, ${y}px) rotateZ(${flap}deg) scaleX(-1)`;
+
+    requestAnimationFrame(animate);
+  }
+
+  requestAnimationFrame(animate);
+}
+
+function spawnCloud() {
+  if (document.querySelectorAll('.cloud').length >= 5) return; // 最多兩片
+
+  const cloud = document.createElement('div');
+  cloud.classList.add('cloud');
+
+  const size = 300 + Math.random() * 300; 
+  const startX = -size - Math.random() * 100;
+  const startY = window.innerHeight + Math.random() * 300;
+  const duration = 30000 + Math.random() * 10000;
+
+  cloud.style.width = `${size}px`;
+  cloud.style.height = `${size}px`;
+  cloud.style.opacity = (0.3 + Math.random() * 0.8).toFixed(2);
+  cloud.style.left = `${startX}px`;
+  cloud.style.top = `${startY}px`;
+
+  document.body.appendChild(cloud);
+
+  cloud.animate([
+    { transform: `translate(0px, 0px)` },
+    { transform: `translate(${window.innerWidth + size}px, ${-window.innerHeight - size}px)` }
+  ], {
+    duration: duration,
+    easing: 'linear'
+  });
+
+  setTimeout(() => cloud.remove(), duration);
+}
+
+
+// 三不五時出現
+setInterval(() => {
+  if (Math.random() < 0.3) spawnBird();
+}, 1000); // 每 3 秒判斷一次
+  
+
+// 每 10 秒有 50% 機率出現新雲
+setInterval(() => {
+  if (Math.random() < 0.5) spawnCloud();
+}, 5000);
+
   function renderPopup(data) 
   {
     const nameEl = document.getElementById("popup-name");
