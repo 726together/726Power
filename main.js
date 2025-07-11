@@ -123,7 +123,7 @@ function spawnCloud() {
 
   const size = 100 + Math.random() * 300; 
   const padding = 20;
-  const startX = padding + Math.random() * (window.innerWidth - size - padding * 2);
+  const startX = Math.random() * (window.innerWidth - size - padding * 2);
   const startY = padding + Math.random() * (window.innerHeight - size - padding * 2);
   const duration = 30000 + Math.random() * 10000;
   const finalOpacity = (0.1 + Math.random() * 0.6);

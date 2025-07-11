@@ -56,12 +56,12 @@ html, body {
 }
 
 #popup-name {
-  font-size: 1.2em;
+  font-size: 2.0rem;
   font-weight: bold;
 }
 
 #popup-district {
-  font-size: 0.95em;
+  font-size: 2.0rem;
   color: #666;
 }
 
@@ -72,6 +72,7 @@ html, body {
   background: #fafafa;
   position: relative;
   z-index: 1;
+  font-size: 2.0rem;
 }
 .annotated {
   background-color: rgba(255, 255, 0, 0.4);
@@ -92,7 +93,7 @@ html, body {
   margin: 6px 0 12px 0;
   border-radius: 4px;
   color: #333;
-  font-size: 0.95em;
+  font-size: 2.0rem;
   line-height: 1.5;
 }
 .response-box.hidden {
@@ -181,7 +182,7 @@ html, body {
   margin-left: auto;
   margin-right: 8px;
   padding: 4px 10px;
-  font-size: 1.1em;
+  font-size: 2.2rem;
   font-weight: bold;
   background-color: rgba(255, 0, 0, 0.15); /* 預設赤色淡底 */
   color: red;
@@ -228,7 +229,7 @@ html, body {
 
 #picker-container {
   position: absolute;
-  bottom: 10;
+  bottom: -100;
   left: 10;
   margin: 10px;
   display: flex;
