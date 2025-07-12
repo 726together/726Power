@@ -18,12 +18,12 @@
         <image href="seigaiha-blue.svg" width="400" height="200" />
       </pattern>
 
-      <filter id="wave-distort">
+      <!--<filter id="wave-distort">
       <feTurbulence type="turbulence" baseFrequency="0.025" numOctaves="1" result="turbulence">
         <animate attributeName="baseFrequency" values="0.025;0.03;0.025" dur="80s" repeatCount="indefinite"/>
       </feTurbulence>
       <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="6"/>
-    </filter>
+    </filter>-->
     </defs>
 
     <rect x="0" y="0" width="1440" height="1982" fill="url(#imgpattern)" filter="url(#wave-distort)" />
@@ -417,7 +417,10 @@
     <div id="picker-wheel">
       <ul id="picker-list"></ul>
     </div>
-    <button id="recall-button" disabled>726! 來罷!</button>
+    <div id="recall-section">
+      <button id="recall-button" disabled>726! 來罷!</button>
+      <div id="legislator-name"></div>
+    </div>
   </div>  
 </div>
 <div id="popup" class="popup hidden">

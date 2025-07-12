@@ -216,6 +216,7 @@ html, body {
   height: 40px;
   pointer-events: none;
   will-change: transform;
+  z-index:10;
 }
 
 .cloud {
@@ -226,6 +227,7 @@ html, body {
   background-size: cover;
   pointer-events: none;
   will-change: transform;
+  z-index:20;
 }
 
 #picker-container {
@@ -328,4 +330,18 @@ html, body {
 }
 #sound-toggle.muted {
   color: #aaa;
+}
+
+#recall-section {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  margin-left: 12px;
+}
+
+#legislator-name {
+  margin-top: 6px;
+  font-size: 2.2rem;
+  color: #333;
+  text-align: center;
 }

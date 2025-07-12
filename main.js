@@ -182,68 +182,73 @@ setInterval(() => {
 
     bodyEl.innerHTML = "";
 
-    data.articles.forEach(article => {
-      article.paragraphs.forEach((paragraph, paraIndex) => {
-        const block = document.createElement("div");
-        block.className = "paragraph-block";
+    if (Array.isArray(data.articles))
+    {
+      data.articles.forEach(article => {
+        article.paragraphs.forEach((paragraph, paraIndex) => {
+          const block = document.createElement("div");
+          block.className = "paragraph-block";
 
-        // 處理標題與日期（支援 fallback）
-        const titleText = paragraph.title && paragraph.title.trim() ? paragraph.title : "未命名段落";
-        const dateText = paragraph.date || "未標註日期";
+          // 處理標題與日期（支援 fallback）
+          const titleText = paragraph.title && paragraph.title.trim() ? paragraph.title : "未命名段落";
+          const dateText = paragraph.date || "未標註日期";
 
-        // 顯示段落標題列
-        const header = document.createElement("div");
-        header.className = "paragraph-header";
-        header.textContent = `📅 ${dateText} - ${titleText}`;
-        block.appendChild(header);
+          // 顯示段落標題列
+          const header = document.createElement("div");
+          header.className = "paragraph-header";
+          header.textContent = `📅 ${dateText} - ${titleText}`;
+          block.appendChild(header);
 
-        // 內文容器（預設隱藏）
-        const content = document.createElement("div");
-        content.className = "paragraph-content hidden";
+          // 內文容器（預設隱藏）
+          const content = document.createElement("div");
+          content.className = "paragraph-content hidden";
 
-        // 建立段落文字內容
-        const p = document.createElement("p");
-        let html = paragraph.text;
+          // 建立段落文字內容
+          const p = document.createElement("p");
+          let html = paragraph.text;
+          if (Array.isArray(paragraph.annotations))
+          {
+            paragraph.annotations.forEach((a, index) => {
+              html = html.replace(
+                a.highlight,
+                `<span class="annotated" data-index="${paraIndex}_${index}">${a.highlight}</span>`
+              );
+            });
 
-        paragraph.annotations.forEach((a, index) => {
-          html = html.replace(
-            a.highlight,
-            `<span class="annotated" data-index="${paraIndex}_${index}">${a.highlight}</span>`
-          );
-        });
+            // 插入文字 + response 結構
+            const container = document.createElement("div");
+            container.innerHTML = html;
 
-        // 插入文字 + response 結構
-        const container = document.createElement("div");
-        container.innerHTML = html;
+            paragraph.annotations.forEach((a, index) => {
+              const span = container.querySelector(`.annotated[data-index="${paraIndex}_${index}"]`);
+              const box = document.createElement("div");
+              box.className = "response-box hidden";
+              box.textContent = a.response;
+              box.dataset.index = `${paraIndex}_${index}`;
+              span.insertAdjacentElement("afterend", box);
+            });
 
-        paragraph.annotations.forEach((a, index) => {
-          const span = container.querySelector(`.annotated[data-index="${paraIndex}_${index}"]`);
-          const box = document.createElement("div");
-          box.className = "response-box hidden";
-          box.textContent = a.response;
-          box.dataset.index = `${paraIndex}_${index}`;
-          span.insertAdjacentElement("afterend", box);
-        });
+            container.querySelectorAll(".annotated").forEach(span => {
+              span.addEventListener("click", () => {
+                const box = span.nextElementSibling;
+                box.classList.toggle("shown");
+                box.classList.toggle("hidden");
+              });
+            });
 
-        container.querySelectorAll(".annotated").forEach(span => {
-          span.addEventListener("click", () => {
-            const box = span.nextElementSibling;
-            box.classList.toggle("shown");
-            box.classList.toggle("hidden");
-          });
-        });
+            p.append(...container.childNodes);
+            content.appendChild(p);
+            block.appendChild(content);
+            bodyEl.appendChild(block);
 
-        p.append(...container.childNodes);
-        content.appendChild(p);
-        block.appendChild(content);
-        bodyEl.appendChild(block);
-
-        // 點標題展開段落
-        header.addEventListener("click", () => {
-          content.classList.toggle("hidden");
+            // 點標題展開段落
+            header.addEventListener("click", () => {
+              content.classList.toggle("hidden");
+            });
+          }
         });
       });
-    });
+    }
 
     document.getElementById("popup").classList.remove("hidden");
     document.getElementById("ocean-background").style.display = "none";
@@ -321,7 +326,7 @@ function setBackgroundLabel(word, wordColor) {
   }
 }
 
-  const taiwanAreas = new Set(['臺北市第01選區', '臺北市第02選區', '臺北市第05選區', '新北市第02選區', '新北市第03選區', '新北市第04選區', '新北市第05選區', '新北市第06選區', '新北市第10選區', '臺中市第01選區', '臺中市第07選區', '臺南市第01選區', '臺南市第02選區', '臺南市第03選區', '臺南市第04選區', '臺南市第05選區', '臺南市第06選區', '高雄市第01選區', '高雄市第02選區', '高雄市第03選區', '高雄市第04選區', '高雄市第05選區', '高雄市第06選區', '高雄市第07選區', '高雄市第08選區', '新竹縣第01選區', '新竹縣第02選區', '彰化縣第01選區', '彰化縣第02選區', '彰化縣第03選區', '彰化縣第04選區', '屏東縣第01選區', '屏東縣第02選區', '嘉義縣第01選區', '嘉義縣第02選區', '嘉義市第01選區', '雲林縣第02選區']);
+  const taiwanAreas = new Set(['臺北市第01選區', '臺北市第02選區', '臺北市第05選區', '新北市第02選區', '新北市第03選區', '新北市第04選區', '新北市第05選區', '新北市第06選區', '新北市第10選區', '臺中市第01選區', '臺中市第07選區', '臺南市第01選區', '臺南市第02選區', '臺南市第03選區', '臺南市第04選區', '臺南市第05選區', '臺南市第06選區', '高雄市第01選區', '高雄市第02選區', '高雄市第03選區', '高雄市第04選區', '高雄市第05選區', '高雄市第06選區', '高雄市第07選區', '高雄市第08選區', '新竹縣第01選區', '新竹縣第02選區', '彰化縣第01選區', '彰化縣第02選區', '彰化縣第04選區', '屏東縣第01選區', '屏東縣第02選區', '嘉義縣第01選區', '嘉義縣第02選區', '嘉義市第01選區', '雲林縣第02選區']);
   const mixedAreas = new Set(['臺北市第03選區', '臺北市第04選區', '臺北市第06選區', '臺北市第07選區', '臺北市第08選區', '新北市第01選區', '新北市第07選區', '新北市第08選區', '新北市第09選區', '新北市第11選區', '新北市第12選區', '桃園市第01選區', '桃園市第02選區', '桃園市第03選區', '桃園市第04選區', '桃園市第05選區', '桃園市第06選區', '臺中市第02選區', '臺中市第03選區', '臺中市第04選區', '臺中市第05選區', '臺中市第06選區', '臺中市第08選區', '基隆市第01選區', '新竹市第01選區', '雲林縣第01選區', '花蓮縣第01選區', '臺東縣第01選區', '南投縣第01選區', '南投縣第02選區']);
 
   const paths = svg.querySelectorAll("path");
@@ -386,17 +391,6 @@ function setBackgroundLabel(word, wordColor) {
       path.style.filter = oldFilter;
     });
   });
-  if (hash) {
-    const targetPath = Array.from(svg.querySelectorAll("path")).find((path) => {
-      const titleEl = path.querySelector("title");
-      return titleEl && titleEl.textContent.trim() === hash;
-    });
-
-    if (targetPath) {
-      targetPath.dispatchEvent(new Event("click")); // 模擬點擊
-      targetPath.scrollIntoView({ behavior: "smooth", block: "center" }); // 可選：自動捲動
-    }
-  }
   // 動態加入 SVG 漸層定義
   const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
   defs.innerHTML = `
@@ -497,10 +491,12 @@ function updateSelection(index) {
   fetch(`data/${selectedDistrict}.json`)
     .then(res => res.json())
     .then(data => {
-      document.getElementById("ocean-background").style.backgroundImage = `url('${data.photo}')`;
+      /*document.getElementById("ocean-background").style.backgroundImage = `url('${data.photo}')`;
       document.getElementById("ocean-background").style.backgroundSize = "cover";
-      document.getElementById("ocean-background").style.backgroundPosition = "center";
+      document.getElementById("ocean-background").style.backgroundPosition = "center";*/
 
+      document.getElementById("legislator-name").textContent = data.name || "";
+        
       if (mixedAreas.has(selectedDistrict)) {
         recallButton.disabled = false;
         recallButton.classList.add("active");
@@ -532,6 +528,15 @@ recallButton.addEventListener("click", () => {
   }
 });
 
+if (hash) {
+  const index = allDistricts.indexOf(hash);
+  if (index !== -1) {
+    const targetIndex = index + 1; // 加上上方空白 li
+    snapToIndex(targetIndex);
+    updateSelection(targetIndex);
+    return;
+  }
+}
 // ▶️ 預設選擇第一項
 const initialIndex = 1; // index 0 是空白
 snapToIndex(initialIndex);
