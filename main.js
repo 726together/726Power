@@ -306,25 +306,33 @@ setInterval(() => {
       // 移除任何先前 scale 補償（手機）
       document.documentElement.style.transform = "scale(1)";
       document.documentElement.style.transformOrigin = "top left";
-    }
-    const svg = document.querySelector("#map-container svg");
-    const hash = decodeURIComponent(window.location.hash.slice(1)).trim();
 
-function setBackgroundLabel(word, wordColor) {
-  const popupLabel = document.getElementById("popup-label");
-  if (popupLabel) {
-    popupLabel.textContent = word;
-    popupLabel.style.color = wordColor;
-
-    // 自動調整底色根據顏色
-    popupLabel.style.backgroundColor =
-      wordColor === "red"
-        ? "rgba(255,0,0,0.1)"
-        : wordColor === "#1e3d7a"
-        ? "rgba(0,64,160,0.1)"
-        : "rgba(0,0,0,0.08)";
+      if (mixedAreas.has(areaName)) {
+        setBackgroundLabel("罷", "#000");
+      } else if (taiwanAreas.has(areaName)) {
+        setBackgroundLabel("青", "#1e3d7a");
+      } else {
+        setBackgroundLabel("赤", "red");
+      }
   }
-}
+  const svg = document.querySelector("#map-container svg");
+  const hash = decodeURIComponent(window.location.hash.slice(1)).trim();
+
+  function setBackgroundLabel(word, wordColor) {
+    const popupLabel = document.getElementById("popup-label");
+    if (popupLabel) {
+      popupLabel.textContent = word;
+      popupLabel.style.color = wordColor;
+
+      // 自動調整底色根據顏色
+      popupLabel.style.backgroundColor =
+        wordColor === "red"
+          ? "rgba(255,0,0,0.1)"
+          : wordColor === "#1e3d7a"
+          ? "rgba(0,64,160,0.1)"
+          : "rgba(0,0,0,0.08)";
+    }
+  }
 
   const taiwanAreas = new Set(['臺北市第01選區', '臺北市第02選區', '臺北市第05選區', '新北市第02選區', '新北市第03選區', '新北市第04選區', '新北市第05選區', '新北市第06選區', '新北市第10選區', '臺中市第01選區', '臺中市第07選區', '臺南市第01選區', '臺南市第02選區', '臺南市第03選區', '臺南市第04選區', '臺南市第05選區', '臺南市第06選區', '高雄市第01選區', '高雄市第02選區', '高雄市第03選區', '高雄市第04選區', '高雄市第05選區', '高雄市第06選區', '高雄市第07選區', '高雄市第08選區', '新竹縣第01選區', '新竹縣第02選區', '彰化縣第01選區', '彰化縣第02選區', '彰化縣第04選區', '屏東縣第01選區', '屏東縣第02選區', '嘉義縣第01選區', '嘉義縣第02選區', '嘉義市第01選區', '雲林縣第02選區']);
   const mixedAreas = new Set(['臺北市第03選區', '臺北市第04選區', '臺北市第06選區', '臺北市第07選區', '臺北市第08選區', '新北市第01選區', '新北市第07選區', '新北市第08選區', '新北市第09選區', '新北市第11選區', '新北市第12選區', '桃園市第01選區', '桃園市第02選區', '桃園市第03選區', '桃園市第04選區', '桃園市第05選區', '桃園市第06選區', '臺中市第02選區', '臺中市第03選區', '臺中市第04選區', '臺中市第05選區', '臺中市第06選區', '臺中市第08選區', '基隆市第01選區', '新竹市第01選區', '雲林縣第01選區', '花蓮縣第01選區', '臺東縣第01選區', '南投縣第01選區', '南投縣第02選區']);
@@ -366,14 +374,6 @@ function setBackgroundLabel(word, wordColor) {
       } else {
         // 第一次點擊 → 僅選擇，不開 popup
         lastClickedDistrict = areaName;
-      }
-
-      if (mixedAreas.has(areaName)) {
-        setBackgroundLabel("罷", "#000");
-      } else if (taiwanAreas.has(areaName)) {
-        setBackgroundLabel("青", "#1e3d7a");
-      } else {
-        setBackgroundLabel("赤", "red");
       }
 
     });
