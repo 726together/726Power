@@ -494,12 +494,20 @@ pickerList.appendChild(blankBottom);
 // 🔄 滾動結束後 snap 對齊中心項
 let scrollTimer = null;
 
+
+function getItemHeight() {
+  const firstItem = pickerWheel.querySelector("li");
+  return firstItem ? firstItem.offsetHeight : 0;
+}
+
 pickerWheel.addEventListener("scroll", () => { 
   if (scrollTimer) clearTimeout(scrollTimer);
   scrollTimer = setTimeout(() => {
     const scrollTop = pickerWheel.scrollTop;
-    const index = Math.round(scrollTop / ITEM_HEIGHT);
-    setActive(index);
+    const itemCount = pickerWheel.querySelectorAll("li").length;
+    const index = Math.round(scrollTop / getItemHeight()) + 1;
+    if(index<itemCount)
+      updateSelection(index);
   }, 100);
 });
 
@@ -511,12 +519,6 @@ function getCenteredIndex() {
     return Array.from(items).indexOf(activeItem);    
   else
     return 1
-}
-
-function setActive(index) {
-  items.forEach(item => item.classList.remove("active"));
-  items[index]?.classList.add("active");
-  selectedIndex = index;
 }
 
 // 👉 滾動對齊某 index 到中心
