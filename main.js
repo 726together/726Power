@@ -448,15 +448,16 @@ setInterval(() => {
   const pickerWheel = document.getElementById("picker-wheel");
   const recallButton = document.getElementById("recall-button");
 
+  let isSnapping = false;
   pickerWheel.addEventListener("wheel", (e) => {
   e.preventDefault(); // 阻止預設 scroll（避免跳太多）
   const direction = e.deltaY > 0 ? 1 : -1;
   const currentIndex = getCenteredIndex();
   const nextIndex = Math.min(
     Math.max(currentIndex + direction, 1), // 最小 index = 1 (第一個選區)
-    allDistricts.length                  // 最大 index = 最後一個選區
+    allDistricts.length                  // 最大 index = 最後一個選區    
   );
-
+  isSnapping = true;
   snapToIndex(nextIndex);
   updateSelection(nextIndex);
 
@@ -500,16 +501,48 @@ function getItemHeight() {
   return firstItem ? firstItem.offsetHeight : 0;
 }
 
+function getHeightIndex(scrolltop) {
+  const items = pickerWheel.querySelectorAll("li");
+  let totalHeight = 0;
+  for (let i = 0; i < items.length; i++) {
+    if(totalHeight + items[i].offsetHeight >= scrollto)
+    {
+         if(totalHeight + items[i].offsetHeight/2 >= scrollto)
+            return i;
+    }
+    totalHeight += items[i].offsetHeight;
+    if(totalHeight >= scrolltop)
+      return i - 1;
+  }
+  return items.length;
+}
+
+function snapToNearestItem() {
+  const items = pickerWheel.querySelectorAll("li");
+  if (!items.length) return;
+
+  const itemHeight = items[0].offsetHeight;
+  const centerY = pickerWheel.scrollTop + pickerWheel.clientHeight / 2;
+  let nearestIndex = Math.round(centerY / itemHeight) - 1;
+  nearestIndex = Math.max(0, Math.min(items.length - 1, nearestIndex));
+
+  const targetScrollTop = items[nearestIndex].offsetTop - (pickerWheel.clientHeight - itemHeight) / 2;
+
+  isSnapping = true;
+  //pickerWheel.scrollTo({ top: targetScrollTop, behavior: "smooth" });
+
+  // 避免 scroll 觸發 loop，延後釋放 isSnapping
+  setTimeout(() => {
+    isSnapping = false;
+  }, 300);
+  updateSelection(nearestIndex);
+}
+
 pickerWheel.addEventListener("scroll", () => { 
+  if (isSnapping) return; 
   if (scrollTimer) clearTimeout(scrollTimer);
   scrollTimer = setTimeout(() => {
-    const itemHeight = getItemHeight();
-    const itemCount = pickerWheel.querySelectorAll("li").length;
-    const centerY = pickerWheel.scrollTop + pickerWheel.clientHeight / 2;
-    const index = Math.round(centerY / itemHeight) - 1;
-    
-    if(index<itemCount)
-      updateSelection(index);
+    snapToNearestItem();
   }, 100);
 });
 
