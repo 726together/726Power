@@ -232,8 +232,7 @@ html, body {
 
 #picker-container {
   position: absolute;
-  bottom: -100;
-  left: 10;
+  left: 10px;
   margin: 10px;
   display: flex;
   flex-direction: row;
@@ -344,4 +343,35 @@ html, body {
   font-size: 2.2rem;
   color: #333;
   text-align: center;
+}
+
+.paragraph-block.common-article {
+  background-color: #e0f7fa;
+  border: 2px solid #00acc1;
+  border-radius: 6px;
+  padding: 4px;
+  margin-bottom: 12px;
+}
+
+.aligned-row {
+  display: flex;
+  margin-bottom: 6px;
+}
+.aligned-row .label {
+  width: 8em;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+.aligned-row .content {
+  flex: 1;
+}
+
+ul {
+  padding-left: 1.5em;
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+ul li {
+  line-height: 1.6;
+  margin-bottom: 4px;
 }

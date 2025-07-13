@@ -185,18 +185,25 @@ setInterval(() => {
     if (Array.isArray(data.articles))
     {
       data.articles.forEach(article => {
+        const isCommon = article.isCommon === true; // 判斷是否為共用段落
         article.paragraphs.forEach((paragraph, paraIndex) => {
           const block = document.createElement("div");
           block.className = "paragraph-block";
-
+          if (isCommon) {
+            block.classList.add("common-article");
+          }
           // 處理標題與日期（支援 fallback）
           const titleText = paragraph.title && paragraph.title.trim() ? paragraph.title : "未命名段落";
-          const dateText = paragraph.date || "未標註日期";
+          const dateText = paragraph.date || "";
 
           // 顯示段落標題列
           const header = document.createElement("div");
           header.className = "paragraph-header";
-          header.textContent = `📅 ${dateText} - ${titleText}`;
+          //header.textContent = `📅 ${dateText} - ${titleText}`;
+          if(dateText)
+            header.innerHTML = DOMPurify.sanitize(`📅 ${dateText} - ${titleText}`);
+          else
+            header.innerHTML = DOMPurify.sanitize(`${titleText}`);
           block.appendChild(header);
 
           // 內文容器（預設隱藏）
@@ -223,9 +230,11 @@ setInterval(() => {
               const span = container.querySelector(`.annotated[data-index="${paraIndex}_${index}"]`);
               const box = document.createElement("div");
               box.className = "response-box hidden";
-              box.textContent = a.response;
+              //box.textContent = a.response;
+              box.innerHTML = DOMPurify.sanitize(a.response);
               box.dataset.index = `${paraIndex}_${index}`;
-              span.insertAdjacentElement("afterend", box);
+              if(span)
+                span.insertAdjacentElement("afterend", box);
             });
 
             container.querySelectorAll(".annotated").forEach(span => {
@@ -289,12 +298,43 @@ setInterval(() => {
         return res.json();
       })
       .then(data => {
-        renderPopup({
-          name: data.name,
-          district: areaName,
-          photo: data.photo,
-          articles: data.articles
-        });
+        if (mixedAreas.has(areaName)) {
+          fetch('data/common.json')
+            .then(commonRes => {
+              if (!commonRes.ok) throw new Error('common.json 不存在');
+              return commonRes.json();
+            })
+            .then(commonData => {
+              const combinedArticles = [
+                  ...(Array.isArray(commonData.articles)
+                    ? commonData.articles.map(a => ({ ...a, isCommon: true }))
+                    : []),
+                  ...(Array.isArray(data.articles) ? data.articles : [])
+              ];
+              renderPopup({
+                name: data.name,
+                district: areaName,
+                photo: data.photo,
+                articles: combinedArticles
+              });
+            })
+            .catch(() => {
+              // fallback to 原始資料
+              renderPopup({
+                name: data.name,
+                district: areaName,
+                photo: data.photo,
+                articles: data.articles
+              });
+            });
+        } else {
+          renderPopup({
+            name: data.name,
+            district: areaName,
+            photo: data.photo,
+            articles: data.articles
+          });
+        }
       })
       .catch(err => {
         console.error(err);
@@ -367,7 +407,7 @@ setInterval(() => {
       snapToIndex(targetIndex);
       updateSelection(targetIndex);
 
-      if (lastClickedDistrict === areaName) {
+      if (lastClickedDistrict === areaName && mixedAreas.has(areaName)) {
         // 再次點擊 → 真的要開 popup
         onDistrictClicked(areaName);
         lastClickedDistrict = null; // 重置
@@ -417,6 +457,7 @@ const recallButton = document.getElementById("recall-button");
 
   snapToIndex(nextIndex);
   updateSelection(nextIndex);
+
 }, { passive: false }); // 🔴 必須設為 false 才能有效阻止滾動
 
 // 取得所有選區名稱（從 SVG <title>）
@@ -461,14 +502,27 @@ pickerWheel.addEventListener("scroll", () => {
 
 // 👉 根據 scrollTop + 偏移計算中心 index
 function getCenteredIndex() {
-  const offset = pickerWheel.scrollTop + CENTER_OFFSET;
-  return Math.round(offset / ITEM_HEIGHT);
+  const items = pickerList.querySelectorAll("li");
+  const activeItem = pickerList.querySelector("li.active");
+  if(activeItem)
+    return Array.from(items).indexOf(activeItem);    
+  else
+    return 1
 }
 
 // 👉 滾動對齊某 index 到中心
-function snapToIndex(index) {
-  const targetTop = index * ITEM_HEIGHT - CENTER_OFFSET;
-  pickerWheel.scrollTo({ top: targetTop, behavior: "smooth" });
+function snapToIndex(index, smooth = false) {
+  /*const targetTop = index * ITEM_HEIGHT - CENTER_OFFSET;
+  pickerWheel.scrollTo({ top: targetTop, behavior: "smooth" });*/
+  const items = pickerList.querySelectorAll("li");
+  const li = items[index];
+  if (!li) return;
+
+  li.scrollIntoView({
+    behavior: smooth ? "smooth" : "auto",
+    block: "center",
+    inline: "nearest"
+  });
 }
 
 // 👉 更新高亮、背景、罷字按鈕
