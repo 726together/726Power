@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  function isTouchDevice() {
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  }
   function alignPickerToSvgBottomLeft() {
   const svg = document.querySelector("#map-container svg");
   const picker = document.getElementById("picker-container");
@@ -442,12 +445,11 @@ setInterval(() => {
   svg.insertBefore(defs, svg.firstChild);
 
   const pickerList = document.getElementById("picker-list");
-const pickerWheel = document.getElementById("picker-wheel");
-const recallButton = document.getElementById("recall-button");
+  const pickerWheel = document.getElementById("picker-wheel");
+  const recallButton = document.getElementById("recall-button");
 
   pickerWheel.addEventListener("wheel", (e) => {
   e.preventDefault(); // 阻止預設 scroll（避免跳太多）
-
   const direction = e.deltaY > 0 ? 1 : -1;
   const currentIndex = getCenteredIndex();
   const nextIndex = Math.min(
@@ -458,7 +460,7 @@ const recallButton = document.getElementById("recall-button");
   snapToIndex(nextIndex);
   updateSelection(nextIndex);
 
-}, { passive: false }); // 🔴 必須設為 false 才能有效阻止滾動
+  }, { passive: false }); // 🔴 必須設為 false 才能有效阻止滾動
 
 // 取得所有選區名稱（從 SVG <title>）
 const allDistricts = Array.from(paths)
@@ -491,12 +493,13 @@ pickerList.appendChild(blankBottom);
 
 // 🔄 滾動結束後 snap 對齊中心項
 let scrollTimer = null;
-pickerWheel.addEventListener("scroll", () => {
+
+pickerWheel.addEventListener("scroll", () => { 
   if (scrollTimer) clearTimeout(scrollTimer);
   scrollTimer = setTimeout(() => {
-    const centerIndex = getCenteredIndex();
-    snapToIndex(centerIndex);
-    updateSelection(centerIndex);
+    const scrollTop = pickerWheel.scrollTop;
+    const index = Math.round(scrollTop / ITEM_HEIGHT);
+    setActive(index);
   }, 100);
 });
 
@@ -508,6 +511,12 @@ function getCenteredIndex() {
     return Array.from(items).indexOf(activeItem);    
   else
     return 1
+}
+
+function setActive(index) {
+  items.forEach(item => item.classList.remove("active"));
+  items[index]?.classList.add("active");
+  selectedIndex = index;
 }
 
 // 👉 滾動對齊某 index 到中心
