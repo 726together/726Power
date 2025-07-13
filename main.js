@@ -503,9 +503,11 @@ function getItemHeight() {
 pickerWheel.addEventListener("scroll", () => { 
   if (scrollTimer) clearTimeout(scrollTimer);
   scrollTimer = setTimeout(() => {
-    const scrollTop = pickerWheel.scrollTop;
+    const itemHeight = getItemHeight();
     const itemCount = pickerWheel.querySelectorAll("li").length;
-    const index = Math.round(scrollTop / getItemHeight()) + 1;
+    const centerY = pickerWheel.scrollTop + pickerWheel.clientHeight / 2;
+    const index = Math.round(centerY / itemHeight) - 1;
+    
     if(index<itemCount)
       updateSelection(index);
   }, 100);
