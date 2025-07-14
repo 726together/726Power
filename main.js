@@ -521,21 +521,32 @@ function snapToNearestItem() {
   const items = pickerWheel.querySelectorAll("li");
   if (!items.length) return;
 
-  const itemHeight = items[0].offsetHeight;
   const centerY = pickerWheel.scrollTop + pickerWheel.clientHeight / 2;
-  let nearestIndex = Math.round(centerY / itemHeight) - 1;
-  nearestIndex = Math.max(0, Math.min(items.length - 1, nearestIndex));
+  let closestItem = null;
+  let minDistance = Infinity;
 
-  const targetScrollTop = items[nearestIndex].offsetTop - (pickerWheel.clientHeight - itemHeight) / 2;
+  items.forEach(item => {
+    const itemCenter = item.offsetTop + item.offsetHeight / 2;
+    const distance = Math.abs(centerY - itemCenter);
+    if (distance < minDistance) {
+      minDistance = distance;
+      closestItem = item;
+    }
+  });
 
-  isSnapping = true;
-  //pickerWheel.scrollTo({ top: targetScrollTop, behavior: "smooth" });
+  if (closestItem) {
+    const targetScrollTop = closestItem.offsetTop - (pickerWheel.clientHeight - closestItem.offsetHeight) / 2;
+    isSnapping = true;
+    pickerWheel.scrollTop = targetScrollTop;
 
-  // 避免 scroll 觸發 loop，延後釋放 isSnapping
-  setTimeout(() => {
-    isSnapping = false;
-  }, 300);
-  updateSelection(nearestIndex);
+    setTimeout(() => {
+      isSnapping = false;
+    }, 300);
+
+    const itemsArr = Array.from(items);
+    const index = itemsArr.indexOf(closestItem);
+    updateSelection(index);
+  }
 }
 
 pickerWheel.addEventListener("scroll", () => { 
