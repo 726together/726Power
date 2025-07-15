@@ -340,7 +340,7 @@ function spawnCloud() {
       document.documentElement.style.transformOrigin = "top left";*/
 
       if (mixedAreas.has(areaName)) {
-        setBackgroundLabel("罷", "#000");
+        setBackgroundLabel("<img src='voting_stamp,_Taiwan.svg' style='height: 1em;width: auto;'/>同意罷免", "#000");
       } else if (taiwanAreas.has(areaName)) {
         setBackgroundLabel("青", "#1e3d7a");
       } else {
@@ -353,7 +353,7 @@ function spawnCloud() {
   function setBackgroundLabel(word, wordColor) {
     const popupLabel = document.getElementById("popup-label");
     if (popupLabel) {
-      popupLabel.textContent = word;
+      popupLabel.innerHTML = word;
       popupLabel.style.color = wordColor;
 
       // 自動調整底色根據顏色
