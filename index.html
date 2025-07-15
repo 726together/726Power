@@ -6,30 +6,11 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />  
   <title>立委選區互動地圖</title>
-  <link rel="stylesheet" href="style.css?_v=1.0">
+  <link rel="stylesheet" href="style.css?_v=1.2">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
 </head>
 <body>
 <audio id="ocean-sound" src="ocean.mp3" loop preload="auto"></audio>
-<div id="ocean-background">
-  <svg viewBox="0 0 1440 1982" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">
-    <defs>
-      <pattern id="imgpattern" x="0" y="0" width="400" height="200" patternUnits="userSpaceOnUse">
-        <image href="seigaiha-blue.svg" width="400" height="200" />
-      </pattern>
-
-      <!--<filter id="wave-distort">
-      <feTurbulence type="turbulence" baseFrequency="0.025" numOctaves="1" result="turbulence">
-        <animate attributeName="baseFrequency" values="0.025;0.03;0.025" dur="80s" repeatCount="indefinite"/>
-      </feTurbulence>
-      <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="6"/>
-    </filter>-->
-    </defs>
-
-    <rect x="0" y="0" width="1440" height="1982" fill="url(#imgpattern)" filter="url(#wave-distort)" />
-  </svg>
-</div>  
-
 <div id="bird-layer"></div>
 <div id="map-container">
   <?xml version="1.0" encoding="UTF-8"?>
@@ -439,21 +420,20 @@
     <!-- JS will insert annotated paragraphs here -->
   </div>
 </div>
-  <script src="main.js?_v=1.2"></script>  
-  <script src="https://unpkg.com/dompurify@2.4.0/dist/purify.min.js"></script>
-  <footer style="margin-top: 2rem; padding: 1rem; font-size: 0.8rem; color: gray; text-align: center; border-top: 1px solid #ccc;">
+<footer id="main-footer">
   本網站所呈現之評論、分析與標註內容，僅供公共監督與言論自由範疇之使用。所有資料來源與引用皆力求準確，若有錯漏歡迎指正。<br>
   評論內容不代表任何特定政黨或候選人立場，亦不為任何法律主張之依據。<br>
   如需聯繫，請寄信至：<a href="mailto:726together@gmail.com">726together@gmail.com</a>
 </footer>
+  <script src="main.js?_v=1.3"></script>  
+  <script src="https://unpkg.com/dompurify@2.4.0/dist/purify.min.js"></script>
 </body>
 </html>
 
-
 <div class="popup-text-and-label">
     <div class="popup-text">
-      <div id="popup-name">林委員</div>
-      <div id="popup-district">台北市第5選區</div>
+      <div id="popup-name"></div>
+      <div id="popup-district"></div>
     </div>
-    <div id="popup-label">罷</div>
+    <div id="popup-label"></div>
   </div>

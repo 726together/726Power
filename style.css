@@ -1,4 +1,8 @@
 html, body {
+  background-image: url("seigaiha-blue.svg");
+  background-repeat: repeat;
+  background-attachment: fixed;
+  background-size: 400px 200px; /* 根據 seigaiha 的圖樣尺寸調整 */  
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -374,4 +378,29 @@ ul {
 ul li {
   line-height: 1.6;
   margin-bottom: 4px;
+}
+
+#main-footer.collapsed {
+  transform: translateY(80%); /* 大部分隱藏，只露出一點 */
+  opacity: 0.3;
+}
+#main-footer.collapsed:hover {
+  transform: translateY(0);
+  opacity: 1;
+}
+#main-footer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  font-size: 0.5em;
+  padding: 0.8rem 1rem;
+  border-top: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-top-right-radius: 8px;
+  z-index: 9999; /* 確保蓋住其他內容 */
+  pointer-events: auto; /* 可點擊內部內容（如 email） */
+  max-width: 25vw;  
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }

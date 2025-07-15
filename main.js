@@ -1,5 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  document.getElementById("main-footer").classList.toggle("collapsed");
+  document.getElementById("main-footer").addEventListener("click", function () {
+  this.classList.toggle("collapsed");
+  });
+  
   function isTouchDevice() {
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   }
@@ -16,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   picker.style.position = "fixed";
   picker.style.left = `${rect.left + 10}px`;
   picker.style.top = `${rect.bottom - picker.offsetHeight - 10}px`;
-}
+  }
 
 alignPickerToSvgBottomLeft();
 window.addEventListener("resize", alignPickerToSvgBottomLeft);
@@ -117,7 +122,7 @@ function spawnBird() {
 
   requestAnimationFrame(animate);
 }
-
+/*
 function spawnCloud() {
   if (document.querySelectorAll('.cloud').length >= 5) return; // 最多兩片
 
@@ -158,20 +163,20 @@ function spawnCloud() {
       cloud.style.opacity = '0';
       setTimeout(() => cloud.remove(), 2000);
     }, duration - 2000);
-}
+  }*/
 
 
-// 三不五時出現
-setInterval(() => {
-  if (Math.random() < 0.3) spawnBird();
-}, 3000); // 每 3 秒判斷一次
+  // 三不五時出現
+  setInterval(() => {
+    if (Math.random() < 0.3) spawnBird();
+  }, 3000); // 每 3 秒判斷一次
   
 
-// 每 10 秒有 50% 機率出現新雲
-setInterval(() => {
-  if (Math.random() < 0.5) spawnCloud();
-}, 5000);
-
+  // 每 10 秒有 50% 機率出現新雲
+  /*setInterval(() => {
+    if (Math.random() < 0.5) spawnCloud();
+  }, 5000);
+  */
   function renderPopup(data) 
   {
     const nameEl = document.getElementById("popup-name");
@@ -263,7 +268,6 @@ setInterval(() => {
     }
 
     document.getElementById("popup").classList.remove("hidden");
-    document.getElementById("ocean-background").style.display = "none";
     document.body.style.backgroundColor = "#0077be";
     document.querySelector('svg').pauseAnimations();
     document.getElementById("picker-container").style.display = "none";
@@ -271,7 +275,6 @@ setInterval(() => {
 
   document.getElementById("popup-close").onclick = () => {
     document.getElementById("popup").classList.add("hidden");
-    document.getElementById("ocean-background").style.display = "block";
     document.body.style.backgroundColor = "";
     document.querySelector('svg').unpauseAnimations();
     document.getElementById("picker-container").style.display = "flex";
