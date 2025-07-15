@@ -277,17 +277,7 @@ function spawnCloud() {
   };
 
   //地圖點選後呼叫
-  function onDistrictClicked(areaName) {
-
-  // ✅ 強制還原 body 的視覺縮放（桌機有效）
-    document.body.style.zoom = "1";
-
-    // ✅ 若支援 visualViewport（大多手機瀏覽器）
-    if (window.visualViewport && window.visualViewport.scale !== 1) {
-      // 暫時用 scale 補償恢復
-      document.documentElement.style.transform = "scale(1)";
-      document.documentElement.style.transformOrigin = "top left";
-    }    
+  function onDistrictClicked(areaName) {  
     //const encodedName = encodeURIComponent(areaName);
     const ts = Date.now(); // 或用 random 也可
     const url = `data/${areaName}.json?t=${ts}`;
