@@ -403,7 +403,10 @@ function spawnCloud() {
     const originalColor = path.style.fill || path.getAttribute("fill") || "";
 
     let lastClickedDistrict = null;
-    path.addEventListener("click", () => {        
+    path.addEventListener("click", e => {        
+      e.preventDefault();  // 防止自動聚焦
+      e.stopPropagation(); // 防止冒泡影響父層
+
       if (!areaName) return;
 
       const selectedIndex = allDistricts.indexOf(areaName);
