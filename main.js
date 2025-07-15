@@ -370,7 +370,7 @@ function spawnCloud() {
   const mixedAreas = new Set(['臺北市第03選區', '臺北市第04選區', '臺北市第06選區', '臺北市第07選區', '臺北市第08選區', '新北市第01選區', '新北市第07選區', '新北市第08選區', '新北市第09選區', '新北市第11選區', '新北市第12選區', '桃園市第01選區', '桃園市第02選區', '桃園市第03選區', '桃園市第04選區', '桃園市第05選區', '桃園市第06選區', '臺中市第02選區', '臺中市第03選區', '臺中市第04選區', '臺中市第05選區', '臺中市第06選區', '臺中市第08選區', '基隆市第01選區', '新竹市第01選區', '雲林縣第01選區', '花蓮縣第01選區', '臺東縣第01選區', '南投縣第01選區', '南投縣第02選區']);
 
   const paths = svg.querySelectorAll("path");
-
+  let lastClickedDistrict = null;
   paths.forEach((path) => {
     const titleEl = path.querySelector("title");
     const areaName = (titleEl && titleEl.textContent.trim()) || path.getAttribute("id") || "";
@@ -387,8 +387,7 @@ function spawnCloud() {
     }
 
     const originalColor = path.style.fill || path.getAttribute("fill") || "";
-
-    let lastClickedDistrict = null;
+    
     path.addEventListener("click", e => {        
       e.preventDefault();  // 防止自動聚焦
       e.stopPropagation(); // 防止冒泡影響父層
