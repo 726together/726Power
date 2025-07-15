@@ -62,7 +62,7 @@ window.addEventListener('resize', updateOceanHeight);
 window.addEventListener('orientationchange', updateOceanHeight);
 document.addEventListener('DOMContentLoaded', updateOceanHeight);
 
-/*function spawnBird() {
+function spawnBird() {
   if (document.querySelectorAll('.bird').length >= 3) return;
   const bird = document.createElement('div');
   bird.classList.add('bird');
@@ -167,13 +167,13 @@ function spawnCloud() {
 
 
   // 三不五時出現
-  /*setInterval(() => {
+  setInterval(() => {
     if (Math.random() < 0.3) spawnBird();
   }, 3000); // 每 3 秒判斷一次
   
 
   // 每 10 秒有 50% 機率出現新雲
-  setInterval(() => {
+  /*setInterval(() => {
     if (Math.random() < 0.5) spawnCloud();
   }, 5000);
   */
@@ -343,11 +343,11 @@ function spawnCloud() {
       });
 
       // Reset zoom (桌機用)
-      document.body.style.zoom = "1";
+      /*document.body.style.zoom = "1";
 
       // 移除任何先前 scale 補償（手機）
       document.documentElement.style.transform = "scale(1)";
-      document.documentElement.style.transformOrigin = "top left";
+      document.documentElement.style.transformOrigin = "top left";*/
 
       if (mixedAreas.has(areaName)) {
         setBackgroundLabel("罷", "#000");
