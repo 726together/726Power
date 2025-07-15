@@ -268,15 +268,11 @@ function spawnCloud() {
     }
 
     document.getElementById("popup").classList.remove("hidden");
-    document.body.style.backgroundColor = "#0077be";
-    document.querySelector('svg').pauseAnimations();
     document.getElementById("picker-container").style.display = "none";
   }
 
   document.getElementById("popup-close").onclick = () => {
     document.getElementById("popup").classList.add("hidden");
-    document.body.style.backgroundColor = "";
-    document.querySelector('svg').unpauseAnimations();
     document.getElementById("picker-container").style.display = "flex";
   };
 
