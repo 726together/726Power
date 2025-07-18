@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<title>花蓮區域管理 Firebase 完整版（含顏色選擇與存取）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+<style>
+  html, body, #map {
+    height: 100%;
+    margin: 0; padding: 0;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    font-size: 16px;
+  }
+  #header {
+    background-color: #3388ff;
+    color: white;
+    padding: 12px 16px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  #header button {
+    background: white;
+    border: none;
+    border-radius: 6px;
+    color: #3388ff;
+    font-weight: bold;
+    padding: 8px 14px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  #zone-list {
+    display: flex;
+    overflow-x: auto;
+    background: #f0f0f0;
+    padding: 8px 10px;
+    margin: 0;
+    list-style: none;
+    border-bottom: 1px solid #ccc;
+  }
+  #zone-list li {
+    padding: 8px 14px;
+    margin-right: 10px;
+    background: #ddd;
+    border-radius: 24px;
+    white-space: nowrap;
+    cursor: default;
+    user-select: none;
+    flex-shrink: 0;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+  }
+  #zone-list li.selected {
+    background: #005bbb;
+    color: white;
+  }
+  #zone-list li span {
+    flex-grow: 1;
+    cursor: pointer;
+  }
+  #zone-list li button {
+    margin-left: 8px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-size: 1.1rem;
+    line-height: 1;
+    user-select: none;
+  }
+  #map {
+    flex-grow: 1;
+  }
+  #loading-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.3);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  #loading-overlay.show {
+    display: flex;
+  }
+  #loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #3388ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg);}
+    100% { transform: rotate(360deg);}
+  }  
+
+  #header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  #search-input {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 1rem;
+  }
+
+  #search-btn {
+    background: white;
+    border: none;
+    border-radius: 6px;
+    color: #3388ff;
+    font-weight: bold;
+    padding: 8px 14px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  /* 新增顏色選擇器樣式 */
+  #color-picker-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .color-option {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+  .color-option.selected {
+    border-color: black;
+  }
+  #custom-color {
+    width: 30px;
+    height: 30px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  @media (max-width: 600px) {
+    #header {
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    #header-left {
+      width: 100%;
+      justify-content: center;
+    }
+    #search-input {
+      width: 70vw;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="header">
+  <div id="header-left">
+    <input type="text" id="search-input" placeholder="搜尋地址..." />
+    <button id="search-btn">搜尋</button>
+    <div id="color-picker-container" title="選擇區域顏色" aria-label="區域顏色選擇器" role="list">
+      <!-- 8色及自訂色會動態產生 -->
+    </div>
+  </div>
+  <div>花蓮區域管理 (Firebase 完整版)</div>
+  <button id="add-region-btn">新增區域</button>  
+</div>
+<ul id="zone-list"></ul>
+<div id="map"></div>
+
+<!-- Firebase App -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<!-- Firebase Firestore -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
+<script>
+  // 元件抓取
+  const searchInput = document.getElementById('search-input');
+  const searchBtn = document.getElementById('search-btn');
+  const zoneList = document.getElementById('zone-list');
+  const addRegionBtn = document.getElementById('add-region-btn');
+  const colorPickerContainer = document.getElementById('color-picker-container');
+
+  // Firebase 初始化
+  const firebaseConfig = {
+    apiKey: "AIzaSyDjB0xOwsANx2xRzB74XJ-7el26WommxCw",
+    authDomain: "flag-1f472.firebaseapp.com",
+    projectId: "flag-1f472",
+    storageBucket: "flag-1f472.firebasestorage.app",
+    messagingSenderId: "848910812254",
+    appId: "1:848910812254:web:7d119f04a39b7ac90220cf",
+    measurementId: "G-128HFBDQ3T"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // 產生 UUID
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
+  // 地圖初始化
+  const map = L.map('map').setView([23.974, 121.614], 11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  const drawnItems = new L.FeatureGroup();
+  map.addLayer(drawnItems);
+
+  // 繪圖控制器
+  const drawControl = new L.Control.Draw({
+    edit: {
+      featureGroup: drawnItems,
+      remove: true
+    },
+    draw: {
+      polygon: true,
+      rectangle: true,
+      circle: false,
+      marker: false,
+      circlemarker: false,
+      polyline: false
+    }
+  });
+  map.addControl(drawControl);
+
+  // 8種預設顏色
+  const defaultColors = [
+    '#e6194b', // 紅
+    '#3cb44b', // 綠
+    '#ffe119', // 黃
+    '#4363d8', // 藍
+    '#f58231', // 橘
+    '#911eb4', // 紫
+    '#46f0f0', // 藍綠
+    '#f032e6'  // 粉
+  ];
+  let selectedColor = defaultColors[0]; // 預設第一色
+
+  // 動態產生顏色選擇器（圓點 + color input）
+  function renderColorPicker() {
+    colorPickerContainer.innerHTML = '';
+    defaultColors.forEach(color => {
+      const div = document.createElement('div');
+      div.className = 'color-option';
+      div.style.backgroundColor = color;
+      if (color === selectedColor) div.classList.add('selected');
+      div.setAttribute('role', 'listitem');
+      div.setAttribute('aria-label', `顏色選項 ${color}`);
+      div.tabIndex = 0;
+      div.onclick = () => selectColor(color, div);
+      div.onkeydown = e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectColor(color, div);
+        }
+      };
+      colorPickerContainer.appendChild(div);
+    });
+    // 自訂顏色 input
+    const customInput = document.createElement('input');
+    customInput.type = 'color';
+    customInput.id = 'custom-color';
+    customInput.title = '自訂顏色';
+    customInput.value = selectedColor;
+    customInput.oninput = () => {
+      selectedColor = customInput.value;
+      // 取消所有預設色的選中
+      document.querySelectorAll('.color-option').forEach(e => e.classList.remove('selected'));
+    };
+    colorPickerContainer.appendChild(customInput);
+  }
+
+  function selectColor(color, div) {
+    selectedColor = color;
+    document.querySelectorAll('.color-option').forEach(e => e.classList.remove('selected'));
+    div.classList.add('selected');
+    // 也更新自訂色input
+    const customInput = document.getElementById('custom-color');
+    if (customInput) customInput.value = color;
+  }
+
+  renderColorPicker();
+
+  let regions = [];
+  let selectedId = null;
+
+  // render 區域列表
+  function renderList() {
+    zoneList.innerHTML = '';
+    regions.forEach(region => {
+      const li = document.createElement('li');
+      li.dataset.id = region.id;
+
+      // 顯示色塊
+      const colorDot = document.createElement('span');
+      colorDot.style.display = 'inline-block';
+      colorDot.style.width = '14px';
+      colorDot.style.height = '14px';
+      colorDot.style.marginRight = '8px';
+      colorDot.style.backgroundColor = region.color || defaultColors[0];
+      colorDot.style.borderRadius = '50%';
+      li.appendChild(colorDot);
+
+      // 名稱部分
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = region.name;
+      nameSpan.style.cursor = 'pointer';
+      nameSpan.onclick = () => {
+        selectedId = region.id;
+        highlightRegion(region.id);
+        fitRegion(region.id);
+        renderList();
+      };
+      li.appendChild(nameSpan);
+
+      // 編輯按鈕
+      const editBtn = document.createElement('button');
+      editBtn.textContent = '✏️';
+      editBtn.title = '修改名稱與顏色';
+      editBtn.onclick = async (e) => {
+        e.stopPropagation();
+        const newName = prompt('修改區域名稱', region.name);
+        if (newName === null) return;
+
+        // 顏色選擇提示 (用 prompt 簡易實作，或改成更好的UI)
+        const newColor = selectedColor;
+
+        if (newName.trim() === '' || !/^#([0-9a-fA-F]{6})$/.test(newColor.trim())) {
+          alert('名稱不可空白，顏色請輸入正確的#六位色碼');
+          return;
+        }
+        const loadingOverlay = document.getElementById('loading-overlay');
+        try {
+          loadingOverlay.classList.add('show'); 
+          await db.collection('regions').doc(region.id).update({
+            name: newName.trim(),
+            color: newColor.trim(),
+            lastUpdated: Date.now(),
+          });
+        } catch (err) {
+          alert('修改失敗：' + err);
+        } finally {
+          loadingOverlay.classList.remove('show');
+        }
+      };
+      li.appendChild(editBtn);
+
+      // 刪除按鈕
+      const delBtn = document.createElement('button');
+      delBtn.textContent = '🗑️';
+      delBtn.title = '刪除區域';
+      delBtn.onclick = async (e) => {
+        e.stopPropagation();
+        if (!confirm(`確定要刪除區域「${region.name}」嗎？`)) return;
+        const loadingOverlay = document.getElementById('loading-overlay');
+        try {
+          loadingOverlay.classList.add('show'); 
+          await db.collection('regions').doc(region.id).delete();
+          if (selectedId === region.id) selectedId = null;
+        } catch (err) {
+          alert('刪除失敗：' + err);
+        } finally {
+          loadingOverlay.classList.remove('show');
+        }
+      };
+      li.appendChild(delBtn);
+
+      if (region.id === selectedId) li.classList.add('selected');
+      zoneList.appendChild(li);
+    });
+  }
+
+  // 以顏色高亮選取的區域，其餘設回預設顏色
+  function highlightRegion(id) {
+    drawnItems.eachLayer(layer => {
+      if (layer._leaflet_id === id) {
+        layer.setStyle({ color: 'red', weight: 4 });
+        layer.bringToFront();
+        if (layer.openPopup) layer.openPopup();
+      } else {
+        const reg = regions.find(r => r.id === layer._leaflet_id);
+        const color = reg && reg.color ? reg.color : defaultColors[0];
+        layer.setStyle({ color: color, weight: 2 });
+        if (layer.closePopup) layer.closePopup();
+      }
+    });
+  }
+
+  // 放大選取區域
+  function fitRegion(id) {
+    const layer = drawnItems.getLayer(id);
+    if (layer) map.fitBounds(layer.getBounds());
+  }
+
+  // 根據資料建立 Leaflet Layer 並套色
+  function createLayerFromRegion(region) {
+    let geojson;
+    try {
+      geojson = JSON.parse(region.geojsonStr);
+    } catch(e) {
+      alert('資料格式錯誤，無法解析 GeoJSON');
+      return;
+    }
+    const layer = L.geoJSON(geojson, { 
+      style: { color: region.color || defaultColors[0], weight: 2 }
+    });
+    layer.bindPopup(region.name);
+    layer._leaflet_id = region.id;
+    drawnItems.addLayer(layer);
+    return layer;
+  }
+
+  // 監聽 Firebase Firestore 區域資料變化
+  db.collection('regions').onSnapshot(snapshot => {
+    drawnItems.clearLayers();
+    regions = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const region = {
+        id: doc.id,
+        name: data.name,
+        geojsonStr: data.geojsonStr,
+        color: data.color || defaultColors[0]
+      };
+      regions.push(region);
+      createLayerFromRegion(region);
+    });
+    renderList();
+  });
+
+  // 新增區域時，存顏色
+  map.on(L.Draw.Event.CREATED, async e => {
+    const layer = e.layer;
+    let name = prompt('請輸入區域名稱');
+    if (!name) return;
+
+    // 顏色使用當下選擇顏色
+    let color = selectedColor;
+
+    // GeoJSON 字串
+    const geojsonRaw = layer.toGeoJSON();
+    const geojsonStr = JSON.stringify(geojsonRaw);
+    const loadingOverlay = document.getElementById('loading-overlay');
+    try {
+      loadingOverlay.classList.add('show'); 
+      await db.collection('regions').doc(generateUUID()).set({
+        name,
+        geojsonStr,
+        color,
+        lastUpdated: Date.now(),
+      });
+    } catch (err) {
+      alert('新增失敗: ' + err);
+    } finally {
+      loadingOverlay.classList.remove('show');
+    }
+  });
+
+  // 刪除時同步刪除 Firebase
+  map.on('draw:deleted', async e => {
+    const layers = e.layers;
+    const loadingOverlay = document.getElementById('loading-overlay');
+    try {
+      loadingOverlay.classList.add('show'); 
+      const batch = db.batch();
+      layers.eachLayer(layer => {
+        const id = layer._leaflet_id;
+        const docRef = db.collection('regions').doc(id);
+        batch.delete(docRef);
+      });
+      await batch.commit();
+      selectedId = null;
+    } catch (err) {
+      alert('刪除失敗: ' + err);
+    } finally {
+      loadingOverlay.classList.remove('show');
+    }
+  });
+
+  // 地圖空白點擊取消選取
+  map.on('click', e => {
+    if (!e.originalEvent._simulated) {
+      selectedId = null;
+      highlightRegion(null);
+      renderList();
+    }
+  });
+
+  // 點擊繪製物件選取
+  drawnItems.on('click', e => {
+    selectedId = e.layer._leaflet_id;
+    highlightRegion(selectedId);
+    renderList();
+  });
+
+  // 新增區域按鈕提醒使用繪製工具
+  addRegionBtn.onclick = () => {
+    alert('請使用地圖左上角繪製工具新增區域');
+  };
+
+  // 地址搜尋功能
+  searchBtn.addEventListener('click', async () => {
+    const keyword = searchInput.value.trim();
+    if (!keyword) return alert("請輸入地址關鍵字");
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(keyword)}`;
+      const res = await fetch(url, { headers: { 'Accept-Language': 'zh-TW' } });
+      const results = await res.json();
+      if (results.length === 0) {
+        alert('查無結果');
+        return;
+      }
+      const place = results[0];
+      const lat = parseFloat(place.lat);
+      const lon = parseFloat(place.lon);
+      map.setView([lat, lon], 16);
+    } catch (err) {
+      alert('搜尋失敗：' + err.message);
+    }
+  });
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') searchBtn.click();
+  });
+</script>
+
+<div id="loading-overlay">
+  <div id="loading-spinner"></div>
+</div>
+</body>
+</html>
