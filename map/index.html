@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8" />
-<title>花蓮區域管理 Firebase 完整版（含顏色選擇與存取）</title>
+<title>花蓮區域管理 Firebase (內部使用)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
@@ -179,8 +179,9 @@
       <!-- 8色及自訂色會動態產生 -->
     </div>
   </div>
-  <div>花蓮區域管理 (Firebase 完整版)</div>
-  <button id="add-region-btn">新增區域</button>  
+  <div>花蓮區域管理</div>
+  <button id="add-region-btn">新增區域</button>
+  <button onclick="locateUser()">📍 取得我的位置</button>
 </div>
 <ul id="zone-list"></ul>
 <div id="map"></div>
@@ -203,13 +204,13 @@
 
   // Firebase 初始化
   const firebaseConfig = {
-    apiKey: "AIzaSyDjB0xOwsANx2xRzB74XJ-7el26WommxCw",
-    authDomain: "flag-1f472.firebaseapp.com",
-    projectId: "flag-1f472",
-    storageBucket: "flag-1f472.firebasestorage.app",
-    messagingSenderId: "848910812254",
-    appId: "1:848910812254:web:7d119f04a39b7ac90220cf",
-    measurementId: "G-128HFBDQ3T"
+    apiKey: "AIzaSyBFE6Zc_bhLvS4Kg9HkdPN9v8SVna3e6rQ",
+    authDomain: "map-1b22b.firebaseapp.com",
+    projectId: "map-1b22b",
+    storageBucket: "map-1b22b.firebasestorage.app",
+    messagingSenderId: "238409334801",
+    appId: "1:238409334801:web:bd9f6d9048ecc6663db1b0",
+    measurementId: "G-K19VB9YY2F"
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
@@ -229,6 +230,33 @@
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
+  if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          L.marker([lat, lng]).addTo(map).bindPopup("你的位置");
+        },
+        (err) => alert("無法取得位置：" + err.message)
+      );
+    } else {
+      alert("此瀏覽器不支援定位功能。");
+  }
+  function locateUser() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          L.marker([lat, lng]).addTo(map).bindPopup("你的位置").openPopup();
+          map.setView([lat, lng], 16);
+        },
+        (err) => alert("無法取得位置：" + err.message)
+      );
+    } else {
+      alert("此瀏覽器不支援定位功能。");
+    }
+  }
   const drawnItems = new L.FeatureGroup();
   map.addLayer(drawnItems);
 
